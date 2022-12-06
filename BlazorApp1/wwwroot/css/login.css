@@ -1,0 +1,19 @@
+body {
+    padding: 0;
+    margin: 0;
+}
+
+.background-wrapper {
+    background-color: #dde6ff;
+    height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.frame {
+    background-color: #ffffff;
+    border-radius: 20px;
+    width: 500px;
+    height: 500px;
+}
