@@ -3,6 +3,13 @@ body {
     margin: 0;
 }
 
+h2 {
+    margin: 0;
+    margin-bottom: 10px;
+    font-weight: normal;
+    font-size: 1.3rem;
+}
+
 .background-wrapper {
     background-color: #dde6ff;
     height: 100vh;
@@ -13,7 +20,64 @@ body {
 
 .frame {
     background-color: #ffffff;
-    border-radius: 20px;
-    width: 500px;
-    height: 500px;
+    border-radius: 15px;
+    width: 90%;
+    max-width: 700px;
+    max-height: 500px;
+    height: 90%;
+    display: block;
+    text-align: center;
+    padding-top: 20px;
+}
+
+.fields {
+    margin: auto;
+    text-align: left;
+    padding-top: 40px;
+    display: block;
+    width:90%;
+}
+
+.logo {
+    background-image: url("/img/logo.jpg");
+    background-repeat: no-repeat;
+    background-size: contain;
+    background-position: center;
+    width: 95%;
+    height: 33%;
+    margin: auto;
+}
+
+input {
+    width: 100%;
+    margin-bottom: 20px;
+    height: 2rem;
+    padding: 0;
+}
+
+.button-wrapper {
+    display: flex;
+    justify-content: center;
+    margin-top: 30px;
+}
+
+.login {
+    margin: auto;
+    text-align: center;
+    background-color: #0094ff;
+    color: #ffffff;
+    border: none;
+    border-radius: 5px;
+    width: 100%;
+    height: 2.2rem;
+}
+
+.bottom-text {
+    text-align: center;
+    font-size: 1.1rem;
+}
+
+.link {
+    color: #0094ff;
+    text-decoration: none;
 }
