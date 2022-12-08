@@ -2,14 +2,14 @@
 {
     public class Market
     {
-        public int id { get; set; }
-        public string name { get; set; }
-        public string description { get; set; }
-        public string location { get; set; }
-        public int numberOfStands { get; set; }
-        public DateTime startingTime { get; set; }
-        public DateTime endingTime { get; set; }
-        public Organizer organizer { get; set; }
-        public string photoPath { get; set; }
+        public int Id { get; set; }
+        public string Name { get; set; }
+        public string Description { get; set; }
+        public string Location { get; set; }
+        public int NumberOfStands { get; set; }
+        public DateTime StartingTime { get; set; }
+        public DateTime EndingTime { get; set; }
+        public Organizer Organizer { get; set; }
+        public string PhotoPath { get; set; }
     }
 }
