@@ -11,5 +11,7 @@
 
         List<string> photos { get; set; }
 
+        public static string testVar = "NAO";
+
     }
 }

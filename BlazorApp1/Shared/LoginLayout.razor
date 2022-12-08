@@ -1,0 +1,15 @@
+﻿<div class="background-wrapper">
+        <div class="frame">
+            <div class="logo"></div>
+            <!--img src="~/img/logo.jpg" alt="Logo" width="350"/-->
+            
+            <div class="fields">
+                @Form
+            </div>
+            
+        </div>
+    </div>
+@code {
+    [Parameter]
+    public RenderFragment Form { get; set; }
+}
