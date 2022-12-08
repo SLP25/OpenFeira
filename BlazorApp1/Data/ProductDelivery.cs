@@ -2,10 +2,10 @@
 {
     public class ProductDelivery
     {
-        public int id { get; set; }
-        public Product product { get; set; }
+        public int Id { get; set; }
+        public Product Product { get; set; }
 
-        public int amount { get; set; }
-        public DateTime timestamp { get; set; }
+        public int Amount { get; set; }
+        public DateTime Timestamp { get; set; }
     }
 }
