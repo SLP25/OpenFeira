@@ -2,14 +2,14 @@
 {
     public class Stand
     {
-        public int id { get; set; }
-        public Seller seller { get; set; }
+        public int Id { get; set; }
+        public Seller Seller { get; set; }
 
-        public Market market { get; set; }
-        public Stand stand { get; set; }
-        public string photoPath { get; set; }
+        public Market Market { get; set; }
+        public Stand Stand { get; set; }
+        public string PhotoPath { get; set; }
 
-        List<Product> products { get; set; }
+        List<Product> Products { get; set; }
 
     }
 }
