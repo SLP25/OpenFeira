@@ -6,7 +6,6 @@
         public Seller Seller { get; set; }
 
         public Market Market { get; set; }
-        public Stand Stand { get; set; }
         public string PhotoPath { get; set; }
 
         List<Product> Products { get; set; }
