@@ -2,16 +2,16 @@
 {
     public class Product
     {
-        public int id { get; set; }
-        public string name { get; set; }
+        public int Id { get; set; }
+        public string Name { get; set; }
 
-        public string description { get; set; }
-        public decimal basePrice { get; set; }
-        public int stock { get; set; }
+        public string Description { get; set; }
+        public decimal BasePrice { get; set; }
+        public int Stock { get; set; }
 
-        List<string> photos { get; set; }
+        List<string> Photos { get; set; }
 
-        public static string testVar = "NAO";
+        public static string TestVar = "NAO";
 
     }
 }
