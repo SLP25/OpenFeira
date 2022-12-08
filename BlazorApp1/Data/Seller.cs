@@ -2,11 +2,11 @@
 {
     public class Seller
     {
-        public User user { get; set; }
-        public string name { get; set; }
-        public string company { get; set; }
-        public string phoneNumber { get; set; }
-        public string website { get; set; }
+        public User User { get; set; }
+        public string Name { get; set; }
+        public string Company { get; set; }
+        public string PhoneNumber { get; set; }
+        public string Website { get; set; }
 
     }
 }
