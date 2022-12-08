@@ -2,9 +2,9 @@
 {
     public class User
     {
-        public string email{ get;set; }
-        public int nif{ get;set; }
-        public string role{ get;set; }
-        public string passwordHash{ get;set; }
+        public string Email{ get;set; }
+        public int Nif{ get;set; }
+        public string Role{ get;set; }
+        public string PasswordHash{ get;set; }
     }
 }
