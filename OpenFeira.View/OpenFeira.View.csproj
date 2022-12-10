@@ -9,6 +9,7 @@
 
     <ItemGroup>
       <ProjectReference Include="..\OpenFeira.Models\OpenFeira.Models.csproj" />
+      <ProjectReference Include="..\OpenFeira.Services\OpenFeira.Services.csproj" />
     </ItemGroup>
 
 </Project>
