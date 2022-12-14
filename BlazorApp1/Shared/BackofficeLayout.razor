@@ -1,0 +1,48 @@
+﻿<div class="background-wrapper">
+        <div class="frame">
+            <div class="header">
+                <div class="arrow-wrapper">
+                    @if (BackArrow)
+                    {
+                        <!--div class="logo"/-->
+                        <div class="arrow">
+                            <a href="@PreviousUrl" class="arrow-link"></a>
+                        </div>
+                    }
+                    @if (PreviousText != null)
+                    {
+                        <!--div class="logo"/-->
+                        <a href="@PreviousUrl" class="previous-text">@PreviousText</a>
+                    }
+                </div>
+                <div class="logo-wrapper">
+                    @if (Logo)
+                    {
+                        <div class="logo"/>
+                    }
+                </div>
+                
+                <div>
+                </div>
+            </div>
+            <div>
+                @Content
+            </div>       
+        </div>   
+    </div>
+@code {
+    [Parameter]
+    public RenderFragment? Content { get; set; }
+
+    [Parameter]
+    public bool Logo { get; set; }
+
+    [Parameter]
+    public bool BackArrow { get; set; }
+
+    [Parameter]
+    public string PreviousText { get; set; }
+
+    [Parameter]
+    public string PreviousUrl { get; set; }
+}
