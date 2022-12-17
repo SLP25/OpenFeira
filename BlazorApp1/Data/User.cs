@@ -6,5 +6,10 @@
         public int Nif{ get;set; }
         public string Role{ get;set; }
         public string PasswordHash{ get;set; }
+
+        public bool doPasswordsMatch(string password)
+        {
+            return BCrypt.Net.BCrypt.Verify(password, PasswordHash);
+        }
     }
 }

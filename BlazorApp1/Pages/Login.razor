@@ -1,17 +1,51 @@
 ﻿@page "/login"
+@inject IUserService userService
+@inject AuthenticationStateProvider authStateProvider
+@inject IJSRuntime js
+@inject NavigationManager navManager
+@using BlazorApp1.Data
+@using BlazorApp1.Authentication
 <PageTitle>Login | BlazorApp1</PageTitle>
 <LoginLayout>
     <Form>
         <h2>Email:</h2>
-        <input type="email" placeholder="Endereço de email" />
+        <input @bind="model.Email" type="email" placeholder="Endereço de email" />
         <h2>Password:</h2>
-        <input type="password" placeholder="Palavra passe"/>
+        <input @bind="model.Password" type="password" placeholder="Palavra passe"/>
 
         <div class="button-wrapper">
-            <button class="login">Log In</button>
+            <button @onclick="Authenticate" class="login">Log In</button>
         </div>     
         <div class="bottom-text">
             <p>Ainda não tem conta? <a class="link" href="/register">Registe-se!</a></p>
         </div>
     </Form>
 </LoginLayout>
+
+@code
+{
+    public class Model
+    {
+        public string Email { get; set; }
+        public string Password { get; set; }
+    }
+
+    private Model model = new Model();
+
+    private async Task Authenticate()
+    {
+        var user = userService.get(model.Email);
+        if (user == null || !user.doPasswordsMatch(model.Password))
+        {
+            await js.InvokeVoidAsync("alert", "Email ou Password invalidos");
+            return;
+        }
+        var customAuthStateProvider = (CustomAuthenticationStateProvider)authStateProvider;
+        await customAuthStateProvider.UpdateAuthenticationState(new UserSession
+        {
+            Email = user.Email,
+            Role = user.Role
+        });
+        navManager.NavigateTo("/main",true);
+    }
+}
