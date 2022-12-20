@@ -8,10 +8,14 @@
 <PageTitle>Login | BlazorApp1</PageTitle>
 <LoginLayout>
     <Form>
+        @if(model.LoginFailed)
+        {
+            <span class="login-failed">Utilizador ou palavra passe incorretos</span>
+        }
         <h2>Email:</h2>
-        <input @bind="model.email" type="email" placeholder="Endereço de email" />
+        <input @bind="model.Email" type="email" placeholder="Endereço de email" />
         <h2>Password:</h2>
-        <input @bind="model.password" type="password" placeholder="Palavra passe"/>
+        <input @bind="model.Password" type="password" placeholder="Palavra passe"/>
 
         <div class="button-wrapper">
             <button @onclick="Authenticate" class="login">Log In</button>
@@ -26,27 +30,36 @@
 {
     public class Model
     {
-        public string email { get; set; }
-        public string password { get; set; }
+        public string Email { get; set; }
+        public string Password { get; set; }
+        public bool LoginFailed { get; set; }
+
+        public Model()
+        {
+            Email = "";
+            Password = "";
+            LoginFailed = false;
+        }
     }
 
     private Model model = new Model();
-    
+
 
     private async Task Authenticate()
     {
+        model.LoginFailed = false;
         User? user;
         try
         {
-            user = await UserService.GetUser(this.model.email);
+            user = await UserService.GetUser(this.model.Email);
         }
         catch (Exception e)
         {
             user = null;
         }
-        if (user==null || !user.DoPasswordsMatch(this.model.password))
+        if (user==null || !user.DoPasswordsMatch(this.model.Password))
         {
-            await Js.InvokeVoidAsync("alert", "Email ou Password invalidos");
+            model.LoginFailed = true;
             return;
         }
         var customAuthStateProvider = (CustomAuthenticationStateProvider)AuthStateProvider;
@@ -55,6 +68,7 @@
             Email = user.UserEmail,
             Role = user.Role
         });
+        
         NavManager.NavigateTo("/main",true);
     }
 }
