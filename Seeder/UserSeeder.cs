@@ -1,7 +1,10 @@
-﻿using BlazorApp1.Data.Interfaces;
+﻿using BlazorApp1.Data;
+using BlazorApp1.Data.Context;
+using BlazorApp1.Data.Interfaces;
 using BlazorApp1.Data.Services;
+using System.Data.Entity;
 
-namespace BlazorApp1.Data.Context;
+namespace OpenFeira.Seeder;
 
 public class UserSeeder
 {
@@ -54,17 +57,16 @@ public class UserSeeder
         return users;
     }
 
-    public void SeedUsers()
+    internal void Seed(OpenFeiraDbContext context)
     {
-        var context = new OpenFeiraDbContext();
-        IUserService userService = new UserService(context);
         
         var users = GenerateUsers(50);
-        
-        foreach (var user in users)
-        { 
-            userService.AddUser(user);
+
+        foreach(User? u in users)
+        {
+            context.Users.Add(u);
         }
+        context.SaveChanges();
     }
 }
 

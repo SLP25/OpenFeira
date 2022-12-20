@@ -36,7 +36,7 @@ public partial class OpenFeiraDbContext : DbContext
     public virtual DbSet<User> Users { get; set; }
 
     public virtual DbSet<UserToken> UserTokens { get; set; }
-    
+
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder.Entity<Bid>(entity =>
@@ -369,6 +369,7 @@ public partial class OpenFeiraDbContext : DbContext
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("FK_UserToken_User");
         });
+
 
         OnModelCreatingPartial(modelBuilder);
     }

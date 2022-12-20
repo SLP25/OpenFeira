@@ -1,0 +1,6 @@
+﻿.item {
+    flex: 1;
+    box-sizing: border-box;
+    flex-basis: 20%;
+    margin: 10px;
+}

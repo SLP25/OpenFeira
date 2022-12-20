@@ -19,7 +19,7 @@ builder.Services.AddRazorPages();
 builder.Services.AddServerSideBlazor();
 builder.Services.AddScoped<ProtectedSessionStorage>();
 builder.Services.AddDbContext<OpenFeiraDbContext>(options =>
-                options.UseSqlServer(builder.Configuration.GetConnectionString("ConnectionGui")));
+                options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 builder.Services.AddScoped<AuthenticationStateProvider,CustomAuthenticationStateProvider>();
 
 builder.Services.AddScoped<IUserService, UserService>();
@@ -41,7 +41,6 @@ app.UseRouting();
 
 app.MapBlazorHub();
 app.MapFallbackToPage("/_Host");
-
 
 
 app.Run();

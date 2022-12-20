@@ -5,21 +5,3 @@
         <h3>MainMenu</h3>
     </Content>
 </BackofficeLayout>
-<AuthorizeView>
-    <Authorized>
-        <button class="btn btn-outline-primary" @onclick="Test">Test</button>
-    </Authorized>
-</AuthorizeView>
-
-@code {
-    [CascadingParameter]
-    private Task<AuthenticationState> authenticationState { get; set; }
-
-    private async Task Test()
-    {
-        var authState = await authenticationState;
-        var message = $"Hello {authState.User.Identity.Name}";
-        await js.InvokeVoidAsync("alert", message);
-    }
-
-}
