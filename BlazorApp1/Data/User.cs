@@ -2,6 +2,7 @@
 
 public partial class User
 {
+    
     public string UserEmail { get; set; } = null!;
 
     public string PasswordHash { get; set; } = null!;
@@ -22,5 +23,5 @@ public partial class User
     {
         return BCrypt.Net.BCrypt.Verify(password, this.PasswordHash);
     }
-    
+
 }

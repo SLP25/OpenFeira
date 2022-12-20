@@ -1,16 +1,14 @@
-﻿using System;
-using System.Collections.Generic;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 
-namespace BlazorApp1.Data;
+namespace BlazorApp1.Data.Context;
 
-public partial class AppDbContext : DbContext
+public partial class OpenFeiraDbContext : DbContext
 {
-    public AppDbContext()
+    public OpenFeiraDbContext()
     {
     }
 
-    public AppDbContext(DbContextOptions<AppDbContext> options)
+    public OpenFeiraDbContext(DbContextOptions<OpenFeiraDbContext> options)
         : base(options)
     {
     }
@@ -82,6 +80,7 @@ public partial class AppDbContext : DbContext
                 .HasForeignKey(d => d.SaleId)
                 .HasConstraintName("FK_Bid_Sale");
         });
+
 
         modelBuilder.Entity<Buyer>(entity =>
         {
@@ -349,7 +348,7 @@ public partial class AppDbContext : DbContext
                 .IsUnicode(false)
                 .HasColumnName("role");
         });
-
+        
         modelBuilder.Entity<UserToken>(entity =>
         {
             entity.HasKey(e => e.UserEmail);

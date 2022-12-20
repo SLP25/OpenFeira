@@ -5,6 +5,7 @@
 @inject NavigationManager NavManager
 @using BlazorApp1.Data
 @using BlazorApp1.Authentication
+@using BlazorApp1.Data.Interfaces
 <PageTitle>Login | BlazorApp1</PageTitle>
 <LoginLayout>
     <Form>
@@ -46,7 +47,7 @@
         }
         if (user==null || !user.DoPasswordsMatch(this.model.password))
         {
-            await Js.InvokeVoidAsync("alert", "Email ou Password invalidos");
+            await Js.InvokeVoidAsync("alert", "Email ou Password inválidos");
             return;
         }
         var customAuthStateProvider = (CustomAuthenticationStateProvider)AuthStateProvider;
