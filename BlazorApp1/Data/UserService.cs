@@ -9,8 +9,11 @@ public class UserService : IUserService
         _context = context;
     }
 
-    public User get(string Email)
+    public async Task<User> GetUser(string email)
     {
-        return _context.Users.Find(Email);
+        var user = await _context.Users.FindAsync(email);
+        if (user == null)
+            throw new Exception("User doesn't exist");
+        return user;
     }
 }

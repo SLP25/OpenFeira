@@ -1,14 +1,23 @@
-﻿namespace BlazorApp1.Data
+﻿using System;
+using System.Collections.Generic;
+
+namespace BlazorApp1.Data;
+
+public partial class Stand
 {
-    public class Stand
-    {
-        public int Id { get; set; }
-        public Seller Seller { get; set; }
+    public int StandId { get; set; }
 
-        public Market Market { get; set; }
-        public string PhotoPath { get; set; }
+    public string SellerId { get; set; } = null!;
 
-        List<Product> Products { get; set; }
+    public int MarketId { get; set; }
 
-    }
+    public string? StandPhotoPath { get; set; }
+
+    public virtual ICollection<Bid> Bids { get; } = new List<Bid>();
+
+    public virtual Market Market { get; set; } = null!;
+
+    public virtual Seller Seller { get; set; } = null!;
+
+    public virtual ICollection<Product> Products { get; } = new List<Product>();
 }

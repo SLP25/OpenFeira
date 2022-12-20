@@ -1,10 +1,21 @@
-﻿namespace BlazorApp1.Data
+﻿using System;
+using System.Collections.Generic;
+
+namespace BlazorApp1.Data;
+
+public partial class Sale
 {
-    public class Sale
-    {
-        public int Id { get; set; }
-        public Seller Seller { get; set; }
-        public DateTime Timestamp { get; set; }
-        public Bid Bid { get; set; }
-    }
+    public int SaleId { get; set; }
+
+    public string SellerId { get; set; } = null!;
+
+    public DateTime SaleTimestamp { get; set; }
+
+    public int BidId { get; set; }
+
+    public virtual Bid Bid { get; set; } = null!;
+
+    public virtual ICollection<Bid> Bids { get; } = new List<Bid>();
+
+    public virtual Seller Seller { get; set; } = null!;
 }

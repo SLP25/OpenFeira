@@ -3,13 +3,13 @@ using System.Collections.Generic;
 
 namespace BlazorApp1.Data;
 
-public partial class Organizer
+public partial class UserToken
 {
     public string UserEmail { get; set; } = null!;
 
-    public string OrganizerName { get; set; } = null!;
+    public byte[] Token { get; set; } = null!;
 
-    public virtual ICollection<Market> Markets { get; } = new List<Market>();
+    public DateTime ExpiryDate { get; set; }
 
     public virtual User UserEmailNavigation { get; set; } = null!;
 }

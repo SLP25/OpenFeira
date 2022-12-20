@@ -1,13 +1,33 @@
-﻿namespace BlazorApp1.Data
+﻿using System;
+using System.Collections.Generic;
+
+namespace BlazorApp1.Data;
+
+public partial class Bid
 {
-    public class Bid
-    {
-        public int Id { get; set; }
-        public Product Product { get; set; }
-        public Stand Stand { get; set; }
-        public Buyer Buyer { get; set; }
-        public decimal Price { get; set; }
-        public DateTime Timestamp { get; set; }
-        public int Amount { get; set; }
-    }
+    public int BidId { get; set; }
+
+    public int BidProduct { get; set; }
+
+    public int BidStand { get; set; }
+
+    public string BuyerId { get; set; } = null!;
+
+    public decimal Price { get; set; }
+
+    public DateTime BidTimestamp { get; set; }
+
+    public int BidAmount { get; set; }
+
+    public int? SaleId { get; set; }
+
+    public virtual Product BidProductNavigation { get; set; } = null!;
+
+    public virtual Stand BidStandNavigation { get; set; } = null!;
+
+    public virtual Buyer Buyer { get; set; } = null!;
+
+    public virtual Sale? Sale { get; set; }
+
+    public virtual ICollection<Sale> Sales { get; } = new List<Sale>();
 }

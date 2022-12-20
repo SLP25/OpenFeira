@@ -1,12 +1,23 @@
-﻿namespace BlazorApp1.Data
-{
-    public class Seller
-    {
-        public User User { get; set; }
-        public string Name { get; set; }
-        public string Company { get; set; }
-        public string PhoneNumber { get; set; }
-        public string Website { get; set; }
+﻿using System;
+using System.Collections.Generic;
 
-    }
+namespace BlazorApp1.Data;
+
+public partial class Seller
+{
+    public string UserEmail { get; set; } = null!;
+
+    public string Name { get; set; } = null!;
+
+    public string? CompanyName { get; set; }
+
+    public string? PhoneNumber { get; set; }
+
+    public string? Website { get; set; }
+
+    public virtual ICollection<Sale> Sales { get; } = new List<Sale>();
+
+    public virtual ICollection<Stand> Stands { get; } = new List<Stand>();
+
+    public virtual User UserEmailNavigation { get; set; } = null!;
 }

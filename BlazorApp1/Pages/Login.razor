@@ -1,17 +1,17 @@
 ﻿@page "/login"
-@inject IUserService userService
-@inject AuthenticationStateProvider authStateProvider
-@inject IJSRuntime js
-@inject NavigationManager navManager
+@inject IUserService UserService
+@inject AuthenticationStateProvider AuthStateProvider
+@inject IJSRuntime Js
+@inject NavigationManager NavManager
 @using BlazorApp1.Data
 @using BlazorApp1.Authentication
 <PageTitle>Login | BlazorApp1</PageTitle>
 <LoginLayout>
     <Form>
         <h2>Email:</h2>
-        <input @bind="model.Email" type="email" placeholder="Endereço de email" />
+        <input @bind="model.email" type="email" placeholder="Endereço de email" />
         <h2>Password:</h2>
-        <input @bind="model.Password" type="password" placeholder="Palavra passe"/>
+        <input @bind="model.password" type="password" placeholder="Palavra passe"/>
 
         <div class="button-wrapper">
             <button @onclick="Authenticate" class="login">Log In</button>
@@ -26,26 +26,35 @@
 {
     public class Model
     {
-        public string Email { get; set; }
-        public string Password { get; set; }
+        public string email { get; set; }
+        public string password { get; set; }
     }
 
     private Model model = new Model();
+    
 
     private async Task Authenticate()
     {
-        var user = userService.get(model.Email);
-        if (user == null || !user.doPasswordsMatch(model.Password))
+        User? user;
+        try
         {
-            await js.InvokeVoidAsync("alert", "Email ou Password invalidos");
+            user = await UserService.GetUser(this.model.email);
+        }
+        catch (Exception e)
+        {
+            user = null;
+        }
+        if (user==null || !user.DoPasswordsMatch(this.model.password))
+        {
+            await Js.InvokeVoidAsync("alert", "Email ou Password invalidos");
             return;
         }
-        var customAuthStateProvider = (CustomAuthenticationStateProvider)authStateProvider;
+        var customAuthStateProvider = (CustomAuthenticationStateProvider)AuthStateProvider;
         await customAuthStateProvider.UpdateAuthenticationState(new UserSession
         {
-            Email = user.Email,
+            Email = user.UserEmail,
             Role = user.Role
         });
-        navManager.NavigateTo("/main",true);
+        NavManager.NavigateTo("/main",true);
     }
 }

@@ -1,8 +1,15 @@
-﻿namespace BlazorApp1.Data
+﻿using System;
+using System.Collections.Generic;
+
+namespace BlazorApp1.Data;
+
+public partial class Buyer
 {
-    public class Buyer
-    {
-        public User User{ get;set; }
-        public string Name{ get;set; }
-    }
+    public string UserEmail { get; set; } = null!;
+
+    public string Name { get; set; } = null!;
+
+    public virtual ICollection<Bid> Bids { get; } = new List<Bid>();
+
+    public virtual User UserEmailNavigation { get; set; } = null!;
 }

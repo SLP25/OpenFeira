@@ -1,15 +1,29 @@
-﻿namespace BlazorApp1.Data
+﻿using System;
+using System.Collections.Generic;
+
+namespace BlazorApp1.Data;
+
+public partial class Market
 {
-    public class Market
-    {
-        public int Id { get; set; }
-        public string Name { get; set; }
-        public string Description { get; set; }
-        public string Location { get; set; }
-        public int NumberOfStands { get; set; }
-        public DateTime StartingTime { get; set; }
-        public DateTime EndingTime { get; set; }
-        public Organizer Organizer { get; set; }
-        public string PhotoPath { get; set; }
-    }
+    public int MarketId { get; set; }
+
+    public string MarketName { get; set; } = null!;
+
+    public string MarketDescription { get; set; } = null!;
+
+    public string? MarketLocation { get; set; }
+
+    public int TotalStands { get; set; }
+
+    public DateTime StartingTime { get; set; }
+
+    public DateTime EndingTime { get; set; }
+
+    public string OrganizerId { get; set; } = null!;
+
+    public string MarketPhotoPath { get; set; } = null!;
+
+    public virtual Organizer Organizer { get; set; } = null!;
+
+    public virtual ICollection<Stand> Stands { get; } = new List<Stand>();
 }

@@ -1,17 +1,25 @@
-﻿namespace BlazorApp1.Data
+﻿using System;
+using System.Collections.Generic;
+
+namespace BlazorApp1.Data;
+
+public partial class Product
 {
-    public class Product
-    {
-        public int Id { get; set; }
-        public string Name { get; set; }
+    public int ProductId { get; set; }
 
-        public string Description { get; set; }
-        public decimal BasePrice { get; set; }
-        public int Stock { get; set; }
+    public string ProductName { get; set; } = null!;
 
-        List<string> Photos { get; set; }
+    public string ProductDescription { get; set; } = null!;
 
-        public static string TestVar = "NAO";
+    public decimal ProductBasePrice { get; set; }
 
-    }
+    public int ProductStock { get; set; }
+
+    public virtual ICollection<Bid> Bids { get; } = new List<Bid>();
+
+    public virtual ICollection<ProductDelivery> ProductDeliveries { get; } = new List<ProductDelivery>();
+
+    public virtual ICollection<ProductPhoto> ProductPhotos { get; } = new List<ProductPhoto>();
+
+    public virtual ICollection<Stand> Stands { get; } = new List<Stand>();
 }
