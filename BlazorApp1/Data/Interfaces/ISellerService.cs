@@ -7,5 +7,5 @@ public interface ISellerService
 
     public Task<List<Bid>> GetSellerActiveBids(string email);
 
-    public void AcceptBid(int id);
+    public Task AcceptBid(int id);
 }

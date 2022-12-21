@@ -24,6 +24,7 @@ builder.Services.AddScoped<AuthenticationStateProvider,CustomAuthenticationState
 
 builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<ISellerService, SellerService>();
+builder.Services.AddScoped<IBuyerService, BuyerService>();
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.

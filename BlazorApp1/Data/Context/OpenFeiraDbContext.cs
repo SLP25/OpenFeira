@@ -46,13 +46,14 @@ public partial class OpenFeiraDbContext : DbContext
             entity.ToTable("Bid");
 
             entity.Property(e => e.BidId)
-                .ValueGeneratedNever()
+                .ValueGeneratedOnAdd()
                 .HasColumnName("bid_id");
             entity.Property(e => e.BidAmount).HasColumnName("bid_amount");
             entity.Property(e => e.BidProduct).HasColumnName("bid_product");
             entity.Property(e => e.BidStand).HasColumnName("bid_stand");
             entity.Property(e => e.BidTimestamp)
                 .HasColumnType("datetime")
+                .HasDefaultValueSql("GETDATE()")
                 .HasColumnName("bid_timestamp");
             entity.Property(e => e.BuyerId)
                 .HasMaxLength(50)
@@ -109,7 +110,7 @@ public partial class OpenFeiraDbContext : DbContext
             entity.ToTable("Market");
 
             entity.Property(e => e.MarketId)
-                .ValueGeneratedNever()
+                .ValueGeneratedOnAdd()
                 .HasColumnName("market_id");
             entity.Property(e => e.EndingTime)
                 .HasColumnType("datetime")
@@ -171,7 +172,7 @@ public partial class OpenFeiraDbContext : DbContext
             entity.ToTable("Product");
 
             entity.Property(e => e.ProductId)
-                .ValueGeneratedNever()
+                .ValueGeneratedOnAdd()
                 .HasColumnName("product_id");
             entity.Property(e => e.ProductBasePrice)
                 .HasColumnType("decimal(2, 0)")
@@ -194,11 +195,12 @@ public partial class OpenFeiraDbContext : DbContext
             entity.ToTable("ProductDelivery");
 
             entity.Property(e => e.DeliveryId)
-                .ValueGeneratedNever()
+                .ValueGeneratedOnAdd()
                 .HasColumnName("delivery_id");
             entity.Property(e => e.DeliveryAmount).HasColumnName("delivery_amount");
             entity.Property(e => e.DeliveryTimestamp)
                 .HasColumnType("datetime")
+                .HasDefaultValueSql("GETDATE()")
                 .HasColumnName("delivery_timestamp");
             entity.Property(e => e.ProductId).HasColumnName("product_id");
 
@@ -250,11 +252,12 @@ public partial class OpenFeiraDbContext : DbContext
             entity.ToTable("Sale");
 
             entity.Property(e => e.SaleId)
-                .ValueGeneratedNever()
+                .ValueGeneratedOnAdd()
                 .HasColumnName("sale_id");
             entity.Property(e => e.BidId).HasColumnName("bid_id");
             entity.Property(e => e.SaleTimestamp)
                 .HasColumnType("datetime")
+                .HasDefaultValueSql("GETDATE()")
                 .HasColumnName("sale_timestamp");
             entity.Property(e => e.SellerId)
                 .HasMaxLength(50)
@@ -310,7 +313,7 @@ public partial class OpenFeiraDbContext : DbContext
             entity.ToTable("Stand");
 
             entity.Property(e => e.StandId)
-                .ValueGeneratedNever()
+                .ValueGeneratedOnAdd()
                 .HasColumnName("stand_id");
             entity.Property(e => e.MarketId).HasColumnName("market_id");
             entity.Property(e => e.SellerId)
