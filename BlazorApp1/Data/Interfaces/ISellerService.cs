@@ -6,4 +6,6 @@ public interface ISellerService
     public Task<List<Sale>> GetSellerSales(string email);
 
     public Task<List<Bid>> GetSellerActiveBids(string email);
+
+    public void AcceptBid(int id);
 }

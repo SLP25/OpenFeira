@@ -1,6 +1,9 @@
 ﻿@page "/seller/bids"
 @using BlazorApp1.Data
-@inject IJSRuntime js
+@using BlazorApp1.Data.Interfaces
+
+
+@inject ISellerService SellerService
 
 <BackofficeLayout Logo="true" BackArrow="true" PreviousText="" PreviousUrl="/" AuthorizedRoles="Seller">
     <Content>
@@ -9,7 +12,7 @@
             @foreach(Bid b in PendingBids)
             {
                 <ComponentListItem>
-                    <SellerBid Photo="@b.BidProductNavigation.ProductPhotos.First().ProductPhotoPath" Name="@b.BidProductNavigation.ProductName"
+                    <SellerBid Id="@b.BidId" Photo="/img/batata.jpg" Name="@b.BidProductNavigation.ProductName"
                     Amount="@b.BidAmount" Price="@b.Price"/>
                 </ComponentListItem>
             }
@@ -21,26 +24,9 @@
 @code {
     public List<Bid> PendingBids { get; set; }
 
-    protected override void OnInitialized()
+    protected async override void OnInitialized()
     {
         base.OnInitialized();
-        PendingBids = new List<Bid>();
-
-        Bid b = new Bid
-            {
-                Price = 50,
-                BidAmount = 3,
-                BidProductNavigation = new Product
-                {
-                    ProductName = "Batata",
-                    ProductPhotos = {new ProductPhoto()
-                    {
-                        ProductPhotoPath = "/img/batata.jpg"
-                    } }
-                }
-            };
-
-        for (int i = 0; i < 10; i++)
-            PendingBids.Add(b);
+        PendingBids = await SellerService.GetSellerActiveBids("bace@mail.com");
     }
 }

@@ -1,12 +1,18 @@
-﻿<div class="block">
+﻿@using BlazorApp1.Data.Interfaces
+
+@inject ISellerService SellerService
+
+<div class="block">
     <div class="wrapper">
         <img class="image" src="@Photo">
         <p>@Name @Amount x <span class="blue">@Price €</span></p>
-        <button class="accept">&#x2713;</button>
+        <button class="accept" onclick="AcceptBid">&#x2713;</button>
     </div>
 </div>
 
 @code {
+    [ParameterAttribute]
+    public int Id { get; set; }
     [ParameterAttribute]
     public string Photo { get; set; }
     [ParameterAttribute]
@@ -15,4 +21,9 @@
     public int Amount { get; set; }
     [ParameterAttribute]
     public decimal Price { get; set; }
+
+    public async Task AcceptBid()
+    {
+        SellerService.AcceptBid(Id);
+    }
 }
