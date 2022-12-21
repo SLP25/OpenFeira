@@ -1,42 +1,45 @@
-﻿<AuthorizeView Roles="@AuthorizedRoles">
-    <Authorized>
-        <div class="background-wrapper">
-        <div class="frame">
-            <div class="header">
-                <div class="arrow-wrapper">
-                    @if (BackArrow)
-                    {
-                        <!--div class="logo"/-->
-                        <div class="arrow">
-                            <a href="@PreviousUrl" class="arrow-link"></a>
-                        </div>
-                    }
-                    @if (PreviousText != null)
-                    {
-                        <!--div class="logo"/-->
-                        <a href="@PreviousUrl" class="previous-text">@PreviousText</a>
-                    }
-                </div>
-                <div class="logo-wrapper">
-                    @if (Logo)
-                    {
-                        <div class="logo"/>
-                    }
-                </div>
+﻿<CascadingAuthenticationState>
+    <AuthorizeView Roles="@AuthorizedRoles">
+        <Authorized>
+            <div class="background-wrapper">
+            <div class="frame">
+                <div class="header">
+                    <div class="arrow-wrapper">
+                        @if (BackArrow)
+                        {
+                            <!--div class="logo"/-->
+                            <div class="arrow">
+                                <a href="@PreviousUrl" class="arrow-link"></a>
+                            </div>
+                        }
+                        @if (PreviousText != null)
+                        {
+                            <!--div class="logo"/-->
+                            <a href="@PreviousUrl" class="previous-text">@PreviousText</a>
+                        }
+                    </div>
+                    <div class="logo-wrapper">
+                        @if (Logo)
+                        {
+                            <div class="logo"/>
+                        }
+                    </div>
                 
-                <div>
+                    <div>
+                    </div>
                 </div>
-            </div>
-            <div>
-                @Content
-            </div>       
-        </div>   
-    </div>
-    </Authorized>
-    <NotAuthorized>
-        <NotFound></NotFound>
-    </NotAuthorized>
-</AuthorizeView>
+                <div>
+                    @Content
+                </div>       
+            </div>   
+        </div>
+        </Authorized>
+        <NotAuthorized>
+            <NotFound></NotFound>
+        </NotAuthorized>
+    </AuthorizeView>
+</CascadingAuthenticationState>
+
 
 @code {
     [Parameter]

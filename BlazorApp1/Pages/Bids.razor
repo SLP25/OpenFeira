@@ -1,9 +1,10 @@
 ﻿@page "/seller/bids"
 @using BlazorApp1.Data
 @using BlazorApp1.Data.Interfaces
-
+@using BlazorApp1.Authentication
 
 @inject ISellerService SellerService
+@inject AuthenticationStateProvider AuthStateProvider
 
 <BackofficeLayout Logo="true" BackArrow="true" PreviousText="" PreviousUrl="/" AuthorizedRoles="Seller">
     <Content>
@@ -24,9 +25,15 @@
 @code {
     public List<Bid> PendingBids { get; set; }
 
+    [CascadingParameter]
+    private Task<AuthenticationState> authenticationState { get; set; }
+
     protected async override void OnInitialized()
     {
         base.OnInitialized();
-        PendingBids = await SellerService.GetSellerActiveBids("bace@mail.com");
+        var customAuthStateProvider = (CustomAuthenticationStateProvider)AuthStateProvider;
+        var authState = await authenticationState;
+        string email = authState.User.Identity.Name;
+        PendingBids = await SellerService.GetSellerActiveBids(email);
     }
 }

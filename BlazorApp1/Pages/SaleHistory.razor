@@ -1,7 +1,9 @@
 ﻿@page "/seller/sales"
+@using BlazorApp1.Authentication
 @using BlazorApp1.Data
 @using BlazorApp1.Data.Interfaces
 
+@inject AuthenticationStateProvider AuthStateProvider
 @inject ISellerService SellerService
 
 <BackofficeLayout Logo="true" BackArrow="true" PreviousText="" PreviousUrl="/" AuthorizedRoles="Seller">
@@ -80,10 +82,16 @@
 @code {
     public List<Sale> Sales { get; set; }
 
+    [CascadingParameter]
+    private Task<AuthenticationState> authenticationState { get; set; }
+
     protected override async void OnInitialized()
     {
         base.OnInitialized();
-        Sales = await SellerService.GetSellerSales("bace@mail.com");
+        var customAuthStateProvider = (CustomAuthenticationStateProvider)AuthStateProvider;
+        var authState = await authenticationState;
+        string email = authState.User.Identity.Name;
+        Sales = await SellerService.GetSellerSales(email);
 
     }
 }
