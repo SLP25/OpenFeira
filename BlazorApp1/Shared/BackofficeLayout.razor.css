@@ -5,7 +5,6 @@
 
 .background-wrapper {
     background-color: #dde6ff;
-    height: 100vh;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -18,8 +17,8 @@
     width: 95vw;
     display: block;
     text-align: center;
-    padding-top: 20px;
-    padding-bottom: 20px;
+    margin: 20px;
+    padding: 20px;
     min-height: 95vh;
 }
 
@@ -64,6 +63,7 @@
     background-position: center;
     width: 20%;
     height: 100%;
+    margin-right: 5px;
 }
 
 .arrow-link {
