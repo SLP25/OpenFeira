@@ -24,7 +24,7 @@ public class SellerService : ISellerService
     
     public async Task<List<Sale>> GetSellerSales(string email)
     {
-        return _context.Sales.Where(s => s.SellerId == email).ToList();
+        return _context.Sales.Where(s => s.SellerId == email).Include("Bid.BidStandNavigation.Market").ToList();
     }
     public async Task<List<Bid>> GetSellerActiveBids(string email)
     {

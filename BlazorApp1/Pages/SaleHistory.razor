@@ -1,5 +1,8 @@
 ﻿@page "/seller/sales"
 @using BlazorApp1.Data
+@using BlazorApp1.Data.Interfaces
+
+@inject ISellerService SellerService
 
 <BackofficeLayout Logo="true" BackArrow="true" PreviousText="" PreviousUrl="/" AuthorizedRoles="Seller">
     <Content>
@@ -48,23 +51,23 @@
                         </div>
                     </TableCell>
                 </TableRow>
-                @for(int i = 0; i < Sales.Count - 1; i++)
+                @foreach(var item in Sales.Select((value, i) => ( value, i )))
                 {
-                    <TableRow EvenRow="@(i % 2 == 0)">
+                    <TableRow EvenRow="@(item.i % 2 == 0)">
                         <TableCell>
-                            @Sales[i].SaleId
+                            @item.value.SaleId
                         </TableCell>
                         <TableCell>
-                            @Sales[i].Bid.BidStandNavigation.Market.MarketName
+                            @item.value.Bid.BidStandNavigation.Market.MarketName
                         </TableCell>
                         <TableCell>
-                            @Sales[i].SaleTimestamp
+                            @item.value.SaleTimestamp
                         </TableCell>
                         <TableCell>
-                            @Sales[i].Bid.BidAmount
+                            @item.value.Bid.BidAmount
                         </TableCell>
                         <TableCell>
-                            @Sales[i].Bid.Price
+                            @item.value.Bid.Price
                         </TableCell>
                     </TableRow>
                 }
@@ -77,42 +80,10 @@
 @code {
     public List<Sale> Sales { get; set; }
 
-    protected override void OnInitialized()
+    protected override async void OnInitialized()
     {
         base.OnInitialized();
-        Sales = new List<Sale>();
+        Sales = await SellerService.GetSellerSales("bace@mail.com");
 
-        Sale s = new Sale
-        {
-            SaleId = 0,
-            SaleTimestamp = DateTime.Now,
-            Bid = new Bid
-            {
-                Price = 50,
-                BidAmount = 3,
-                BidProductNavigation = new Product
-                {
-                    ProductName = "Batata",
-                    ProductPhotos = {new ProductPhoto()
-                    {
-                        ProductPhotoPath = "/img/batata.jpg"
-                    }
-                }
-                },
-                BidStandNavigation = new Stand
-                {
-                    Market = new Market
-                    {
-                        MarketName = "Feira da Batata"
-                    }
-                }
-            }
-        };
-
-
-        for(int i = 0; i < 20; i++)
-        {
-            Sales.Add(s);
-        }
     }
 }
