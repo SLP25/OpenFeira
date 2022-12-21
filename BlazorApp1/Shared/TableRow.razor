@@ -1,0 +1,21 @@
+﻿@if(EvenRow)
+{
+    <tr class="row-even">
+        @ChildContent
+    </tr>
+}
+else
+{
+    <tr class="row-odd">
+        @ChildContent
+    </tr>
+}
+
+
+@code {
+    [Parameter]
+    public RenderFragment ChildContent { get; set; }
+
+    [ParameterAttribute]
+    public bool EvenRow { get; set; }
+}

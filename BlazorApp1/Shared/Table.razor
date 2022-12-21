@@ -1,0 +1,11 @@
+﻿<div class="table-wrapper">
+    <table class="table">
+        @ChildContent
+    </table>
+</div>
+
+
+@code {
+    [Parameter]
+    public RenderFragment ChildContent { get; set; }
+}

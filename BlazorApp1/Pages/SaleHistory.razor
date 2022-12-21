@@ -1,0 +1,118 @@
+﻿@page "/seller/sales"
+@using BlazorApp1.Data
+
+<BackofficeLayout Logo="true" BackArrow="true" PreviousText="Batata" PreviousUrl="/">
+    <Content>
+        <h2>Histórico de Vendas</h2>
+        <div class="table-wrapper">
+             <Table>
+                <TableRow EvenRow="@false">
+                    <TableCell>
+                        <div class="inline">
+                            <div class="flex">
+                                <img class="image" src="/img/reference.png" />
+                                <h3 class="header">Referência</h3>
+                            </div>
+                        </div>
+                    </TableCell>
+                    <TableCell>
+                       <div class="inline">
+                            <div class="flex">
+                                <img class="image" src="/img/market.png" />
+                                <h3 class="header">Feira</h3>
+                            </div>
+                        </div>
+                    </TableCell>
+                    <TableCell>
+                        <div class="inline">
+                            <div class="flex">
+                                <img class="image" src="/img/date.png" />
+                                <h3 class="header">Data</h3>
+                            </div>
+                        </div>
+                    </TableCell>
+                    <TableCell>
+                        <div class="inline">
+                            <div class="flex">
+                                <img class="image" src="/img/amount.png" />
+                                <h3 class="header">Quantidade</h3>
+                            </div>
+                        </div>
+                    </TableCell>
+                    <TableCell>
+                        <div class="inline">
+                            <div class="flex">
+                                <img class="image" src="/img/price.png" />
+                                <h3 class="header">Preço</h3>
+                            </div>
+                        </div>
+                    </TableCell>
+                </TableRow>
+                @for(int i = 0; i < Sales.Count - 1; i++)
+                {
+                    <TableRow EvenRow="@(i % 2 == 0)">
+                        <TableCell>
+                            @Sales[i].SaleId
+                        </TableCell>
+                        <TableCell>
+                            @Sales[i].Bid.BidStandNavigation.Market.MarketName
+                        </TableCell>
+                        <TableCell>
+                            @Sales[i].SaleTimestamp
+                        </TableCell>
+                        <TableCell>
+                            @Sales[i].Bid.BidAmount
+                        </TableCell>
+                        <TableCell>
+                            @Sales[i].Bid.Price
+                        </TableCell>
+                    </TableRow>
+                }
+            </Table>
+        </div>
+    </Content>
+</BackofficeLayout>
+   
+
+@code {
+    public List<Sale> Sales { get; set; }
+
+    protected override void OnInitialized()
+    {
+        base.OnInitialized();
+        Sales = new List<Sale>();
+
+        Sale s = new Sale
+        {
+            SaleId = 0,
+            SaleTimestamp = DateTime.Now,
+            Bid = new Bid
+            {
+                Price = 50,
+                BidAmount = 3,
+                BidProductNavigation = new Product
+                {
+                    ProductName = "Batata",
+                    ProductPhotos = {new ProductPhoto()
+                    {
+                        ProductPhotoPath = "/img/batata.jpg"
+                    }
+                }
+                },
+                BidStandNavigation = new Stand
+                {
+                    Market = new Market
+                    {
+                        MarketName = "Feira da Batata"
+                    }
+                }
+            }
+        };
+
+
+        for(int i = 0; i < 20; i++)
+        {
+            Sales.Add(s);
+        }
+    }
+}

@@ -1,0 +1,24 @@
+﻿.inline {
+    display: inline-table;
+}
+
+.flex {
+    display: flex;
+}
+
+.image {
+    height: 1.7rem;
+    width: 1.7rem;
+    margin-right: 5px;
+}
+
+.header {
+    font-size: 1.5rem;
+}
+
+.table-wrapper {
+    width: 100%;
+    padding: 10%;
+    padding: 5%;
+    margin: auto;
+}

@@ -1,0 +1,9 @@
+﻿.table-wrapper {
+    width: 100%;
+    overflow-x: auto;
+    text-align: center;
+}
+
+.table {
+    width: 100%;
+}
