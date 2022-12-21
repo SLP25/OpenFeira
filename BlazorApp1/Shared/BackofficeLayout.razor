@@ -1,4 +1,6 @@
-﻿<div class="background-wrapper">
+﻿<AuthorizeView Roles="@AuthorizedRoles">
+    <Authorized>
+        <div class="background-wrapper">
         <div class="frame">
             <div class="header">
                 <div class="arrow-wrapper">
@@ -30,7 +32,15 @@
             </div>       
         </div>   
     </div>
+    </Authorized>
+    <NotAuthorized>
+        <NotFound></NotFound>
+    </NotAuthorized>
+</AuthorizeView>
+
 @code {
+    [Parameter]
+    public string AuthorizedRoles { get; set; }
     [Parameter]
     public RenderFragment? Content { get; set; }
 
