@@ -24,6 +24,8 @@ public partial class OpenFeiraDbContext : DbContext
     public virtual DbSet<Product> Products { get; set; }
 
     public virtual DbSet<ProductDelivery> ProductDeliveries { get; set; }
+    
+    public virtual DbSet<ProductInStand> ProductInStands { get; set; }
 
     public virtual DbSet<ProductPhoto> ProductPhotos { get; set; }
 
@@ -80,7 +82,6 @@ public partial class OpenFeiraDbContext : DbContext
                 .HasForeignKey(d => d.SaleId)
                 .HasConstraintName("FK_Bid_Sale");
         });
-
 
         modelBuilder.Entity<Buyer>(entity =>
         {
@@ -207,6 +208,27 @@ public partial class OpenFeiraDbContext : DbContext
                 .HasConstraintName("FK_ProductDelivery_Product");
         });
 
+        modelBuilder.Entity<ProductInStand>(entity =>
+        {
+            entity.HasKey(e => new { e.StandId, e.ProductId });
+
+            entity.ToTable("ProductInStand");
+
+            entity.Property(e => e.StandId).HasColumnName("stand_id");
+            entity.Property(e => e.ProductId).HasColumnName("product_id");
+            entity.Property(e => e.Stock).HasColumnName("productinstand_stock");
+
+            entity.HasOne(d => d.Product).WithMany(p => p.ProductInStands)
+                .HasForeignKey(d => d.ProductId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_ProductInStand_Product");
+
+            entity.HasOne(d => d.Stand).WithMany(p => p.ProductInStands)
+                .HasForeignKey(d => d.StandId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_ProductInStand_Stand");
+        });
+
         modelBuilder.Entity<ProductPhoto>(entity =>
         {
             entity.HasKey(e => new { e.ProductId, e.ProductPhotoPath });
@@ -309,23 +331,6 @@ public partial class OpenFeiraDbContext : DbContext
                 .HasForeignKey(d => d.SellerId)
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("FK_Stand_Seller");
-
-            entity.HasMany(d => d.Products).WithMany(p => p.Stands)
-                .UsingEntity<Dictionary<string, object>>(
-                    "ProductInStand",
-                    r => r.HasOne<Product>().WithMany()
-                        .HasForeignKey("ProductId")
-                        .OnDelete(DeleteBehavior.ClientSetNull)
-                        .HasConstraintName("FK_ProductInStand_Product"),
-                    l => l.HasOne<Stand>().WithMany()
-                        .HasForeignKey("StandId")
-                        .OnDelete(DeleteBehavior.ClientSetNull)
-                        .HasConstraintName("FK_ProductInStand_Stand"),
-                    j =>
-                    {
-                        j.HasKey("StandId", "ProductId");
-                        j.ToTable("ProductInStand");
-                    });
         });
 
         modelBuilder.Entity<User>(entity =>
@@ -348,7 +353,7 @@ public partial class OpenFeiraDbContext : DbContext
                 .IsUnicode(false)
                 .HasColumnName("role");
         });
-        
+
         modelBuilder.Entity<UserToken>(entity =>
         {
             entity.HasKey(e => e.UserEmail);
@@ -369,6 +374,8 @@ public partial class OpenFeiraDbContext : DbContext
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("FK_UserToken_User");
         });
+
+        OnModelCreatingPartial(modelBuilder);
 
 
         OnModelCreatingPartial(modelBuilder);

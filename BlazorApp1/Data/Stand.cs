@@ -19,5 +19,5 @@ public partial class Stand
 
     public virtual Seller Seller { get; set; } = null!;
 
-    public virtual ICollection<Product> Products { get; } = new List<Product>();
+    public virtual ICollection<ProductInStand> ProductInStands { get; } = new List<ProductInStand>();
 }

@@ -21,5 +21,5 @@ public partial class Product
 
     public virtual ICollection<ProductPhoto> ProductPhotos { get; } = new List<ProductPhoto>();
 
-    public virtual ICollection<Stand> Stands { get; } = new List<Stand>();
+    public virtual ICollection<ProductInStand> ProductInStands { get; } = new List<ProductInStand>();
 }
