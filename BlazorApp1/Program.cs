@@ -23,6 +23,7 @@ builder.Services.AddDbContext<OpenFeiraDbContext>(options =>
 builder.Services.AddScoped<AuthenticationStateProvider,CustomAuthenticationStateProvider>();
 
 builder.Services.AddScoped<IUserService, UserService>();
+builder.Services.AddScoped<ISellerService, SellerService>();
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
