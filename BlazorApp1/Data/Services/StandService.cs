@@ -27,8 +27,10 @@ public class StandService : IStandService
 
     public async Task AddProductToStand(int productId, int standId,int amount)
     {
+        if (amount <= 0) throw new Exception("The amount must be bigger than 0");
         Stand s = await GetStand(standId);
         Product? p = await _context.Products.FindAsync(productId);
+        if (DateTime.Now > s.Market.StartingTime) throw new Exception("The Market has already started");
         if (p == null) throw new Exception("No product exists with the given id");
         if (p.ProductSeller != s.SellerId)
             throw new Exception("The product doesn't belong to the same user as the stand");
