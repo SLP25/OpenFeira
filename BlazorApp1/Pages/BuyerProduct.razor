@@ -1,0 +1,109 @@
+﻿@page "/buyer/product/{ProductIdString}"
+
+@using BlazorApp1.Data.Interfaces
+@using BlazorApp1.Data
+@using BlazorApp1.Authentication
+
+@inject AuthenticationStateProvider AuthStateProvider
+@inject IBuyerService BuyerService
+
+<BackofficeLayout Logo="true" BackArrow="true" PreviousText="" PreviousUrl="/" AuthorizedRoles="Buyer">
+    <Content>
+        <div class="wrapper">
+            <div class="col">
+                <img class="image" src="/img/batata.jpg" />
+            </div>
+            <div class="col">
+                <h1 class="product-name">Uma batata</h1>
+                <h2 class="subtitle"><span class="blue">Bace</span> quer 99.99€</h2>
+                <p class="description">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Etiam vel enim porta, auctor purus sodales, efficitur diam. Phasellus faucibus sodales luctus. Cras quis libero justo. Mauris sapien dolor, placerat at accumsan quis, lobortis eget erat. Pellentesque porta ipsum quam, nec </p>
+
+
+                <div class="flex col button-wrapper">
+                    <div class="dropdown">
+                        <button class="button" @onclick="InvertBidVisible">&#x1F44B; Fazer proposta</button>
+                        <div class="form-wrapper" style="@(BidVisible ? "" : "opacity: 0")">
+                            <div class="child">
+                                <input @bind="BidAmount" class="input-field" type="number" step="1" placeholder="Qt."/>
+                                <input @bind="BidPrice" class="input-field" type="number" placeholder="Valor Unitário"/>
+                                <button class="input-field submit">Confirmar</button>
+                            </div>
+                            
+                        </div>
+                    </div>
+                    <div class="dropdown">
+                        <button class="button" @onclick="InvertBuyVisible">&#x1F6D2; Comprar</button>
+                        <div class="form-wrapper" style="@(BuyVisible ? "" : "opacity: 0")">
+                            <div class="child">
+                                <input @bind="BuyAmount" class="input-field" type="number" step="1" placeholder="Qt."/>
+                                <button class="input-field submit">Confirmar</button>
+                            </div>
+                        </div>
+                    </div> 
+                </div>
+            </div>
+        </div>
+    </Content>
+</BackofficeLayout>
+
+@code {
+    [CascadingParameter]
+    private Task<AuthenticationState> authenticationState { get; set; }
+
+    [Parameter]
+    public string ProductIdString { get; set; }
+    public Product Product { get; set; }
+    public int StandId { get; set; }
+    public bool BidVisible { get; set; }
+    public bool BuyVisible { get; set; }
+
+
+    public int BidAmount { get; set; }
+    public decimal BidPrice { get; set; }
+    public int BuyAmount { get; set; }
+
+
+    protected override void OnInitialized()
+    {
+        base.OnInitialized();
+        BidVisible = false;
+        BuyVisible = false;
+        BidAmount = 0;
+        BidPrice = 0.0m;
+        BuyAmount = 0;
+
+
+    }
+
+    private async Task<string> GetUserEmail()
+    {
+        var customAuthStateProvider = (CustomAuthenticationStateProvider)AuthStateProvider;
+        var authState = await authenticationState;
+        string email = authState.User.Identity.Name;
+        return email;
+    }
+
+    public void InvertBidVisible()
+    {
+        BidVisible = !BidVisible;
+        StateHasChanged();
+    }
+
+    public void InvertBuyVisible()
+    {
+        BuyVisible = !BuyVisible;
+        StateHasChanged();
+    }
+
+    public async void Bid()
+    {
+        string email = await GetUserEmail();
+        await BuyerService.MakeBid(email, BidPrice, BidAmount, StandId, Product.ProductId);
+    }
+
+    public async void Buy()
+    {
+        string email = await GetUserEmail();
+        await BuyerService.MakeBid(email, Product.ProductBasePrice, BuyAmount, StandId, Product.ProductId);
+    }
+}

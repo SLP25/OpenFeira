@@ -17,7 +17,7 @@ public class BuyerService : IBuyerService
         return buyer;
     }
 
-    public async Task MakeBid(string email, Decimal price,int amount, int standId, int productId)
+    public async Task MakeBid(string email, decimal price,int amount, int standId, int productId)
     {
         Buyer b = await GetBuyer(email);
         

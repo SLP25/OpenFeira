@@ -1,0 +1,98 @@
+﻿.wrapper {
+    display: flex;
+    width: 100%;
+    flex-wrap: wrap;
+}
+
+.col {
+    flex: 1;
+    flex-wrap: wrap;
+    min-width: 300px;
+}
+
+.image {
+    width: 100%;
+    height: auto;
+    padding-right: 20px;
+    padding-left: 20px;
+    border-radius: 40px;
+}
+
+.product-name {
+    text-align: center;
+    font-size: 4rem;
+}
+
+.subtitle {
+    text-align: center;
+    margin-top: 20px;
+    font-size: 1.5rem;
+}
+
+.blue {
+    color: #0094ff;
+}
+
+.description {
+    font-size: 1.2rem;
+    text-align: center;
+    max-width: 70%;
+    margin: auto;
+    margin-top: 80px;
+}
+
+.button-wrapper {
+    display: inline-flex;
+    width: 100%;
+    margin-top: 50px;
+}
+
+.button {
+    width: fit-content;
+    margin: auto;
+    margin-top: 0px;
+    background-color: #0094ff;
+    color: #ffffff;
+    font-weight: bold;
+    border-radius: 10px;
+    border: none;
+    padding: 5px 10px 5px 10px;
+    font-size: 1.3rem;
+}
+
+.form-wrapper {
+    display: flex;
+    margin: auto;
+    padding: 10px;
+    padding-top: 0px;
+    transition: all 0.5s;
+}
+
+.input-field {
+    width: 70%;
+    margin-top: 5px;
+    margin-bottom: 5px;
+    border-radius: 7px;
+    border: solid 1px black;
+}
+
+.dropdown {
+    display: inline-block;
+    margin: auto;
+    margin-top: 0px;
+}
+
+.submit {
+    background-color: #0094ff;
+    color: #ffffff;
+    font-weight: bold;
+    border: none!important;
+}
+
+.child {
+    flex-grow: 1;
+    width: 0;
+    border: 1px solid black;
+    border-bottom-left-radius: 10px;
+    border-bottom-right-radius: 10px;
+}
