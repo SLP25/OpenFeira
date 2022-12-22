@@ -24,4 +24,9 @@ public partial class User
         return BCrypt.Net.BCrypt.Verify(password, this.PasswordHash);
     }
 
+    public static String EncryptPassword(string password)
+    {
+        return BCrypt.Net.BCrypt.HashPassword(password);
+    }
+
 }

@@ -53,4 +53,25 @@ public class SellerService : ISellerService
         _context.Update(bid);
         await _context.SaveChangesAsync();
     }
+
+    public async Task CreateSeller(string email, string password,int nif,string name,string? companyName,string? phoneNumber,string? website)
+    {
+        User? s = await _context.Users.FindAsync(email);
+        if (s != null) throw new Exception("A user with that username already exists");
+        var seller = new Seller { 
+            UserEmailNavigation = new User
+            {
+                Nif = nif,
+                UserEmail = email,
+                PasswordHash = User.EncryptPassword(password)
+            },
+            Name = name,
+            CompanyName = companyName,
+            PhoneNumber = phoneNumber,
+            Website = website
+        };
+        seller.UserEmailNavigation.Seller = seller;
+        await _context.Sellers.AddAsync(seller);
+        await _context.SaveChangesAsync();
+    }
 }

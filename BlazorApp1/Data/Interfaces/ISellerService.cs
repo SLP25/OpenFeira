@@ -8,4 +8,7 @@ public interface ISellerService
     public Task<List<Bid>> GetSellerActiveBids(string email);
 
     public Task AcceptBid(int id);
+
+    public Task CreateSeller(string email, string password, int nif, string name, string? companyName,
+        string? phoneNumber, string? website);
 }

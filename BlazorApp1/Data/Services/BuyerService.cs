@@ -26,5 +26,25 @@ public class BuyerService : IBuyerService
         _context.Add<Bid>(new Bid { BidAmount = amount,BidProduct = productId,BidStand = standId,BuyerId = email,Price = price});
         await _context.SaveChangesAsync();
     }
+
+    public async Task CreateBuyer(string email, string password, int nif, string name)
+    {
+        User? u = await _context.Users.FindAsync(email);
+        if (u != null) throw new Exception("A User with that username already exists");
+        Buyer b = new Buyer
+        {
+            UserEmailNavigation = new User
+            {
+
+                Nif = nif,
+                UserEmail = email,
+                PasswordHash = User.EncryptPassword(password)
+            },
+            Name = name
+        };
+        b.UserEmailNavigation.Buyer = b;
+        await _context.Buyers.AddAsync(b);
+        await _context.SaveChangesAsync();
+    }
     
 }
