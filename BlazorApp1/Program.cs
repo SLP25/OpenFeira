@@ -22,13 +22,14 @@ builder.Services.AddDbContext<OpenFeiraDbContext>(options =>
                 options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 builder.Services.AddScoped<AuthenticationStateProvider,CustomAuthenticationStateProvider>();
 
-builder.Services.AddScoped<IUserService, UserService>();
-builder.Services.AddScoped<ISellerService, SellerService>();
 builder.Services.AddScoped<IBuyerService, BuyerService>();
-builder.Services.AddScoped<IOrganizerService, OrganizerService>();
 builder.Services.AddScoped<IMarketService, MarketService>();
-builder.Services.AddScoped<ISaleService, SaleService>();
+builder.Services.AddScoped<IOrganizerService, OrganizerService>();
+builder.Services.AddScoped<IProductService, ProductService>();
+builder.Services.AddScoped<ISellerService, SellerService>();
 builder.Services.AddScoped<IStandService,StandService>();
+builder.Services.AddScoped<IUserService, UserService>();
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.

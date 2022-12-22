@@ -14,6 +14,7 @@ public partial class Seller
     public string? PhoneNumber { get; set; }
 
     public string? Website { get; set; }
+    public virtual ICollection<Product> Products { get; } = new List<Product>();
 
     public virtual ICollection<Sale> Sales { get; } = new List<Sale>();
 

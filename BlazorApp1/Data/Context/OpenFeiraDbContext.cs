@@ -185,7 +185,16 @@ public partial class OpenFeiraDbContext : DbContext
                 .HasMaxLength(50)
                 .IsUnicode(false)
                 .HasColumnName("product_name");
+            entity.Property(e => e.ProductSeller)
+                .HasMaxLength(50)
+                .IsUnicode(false)
+                .HasColumnName("product_seller");
             entity.Property(e => e.ProductStock).HasColumnName("product_stock");
+            
+            entity.HasOne(d => d.ProductSellerNavigation).WithMany(p => p.Products)
+                .HasForeignKey(d => d.ProductSeller)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK__Product__product__14270015");
         });
 
         modelBuilder.Entity<ProductDelivery>(entity =>

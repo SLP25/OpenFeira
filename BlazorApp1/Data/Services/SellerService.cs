@@ -74,4 +74,20 @@ public class SellerService : ISellerService
         await _context.Sellers.AddAsync(seller);
         await _context.SaveChangesAsync();
     }
+
+    public async Task RegisterSellerInMarket(string email, int id,string standPhoto)
+    {
+        Market? m = await _context.Markets.FindAsync(id);
+        if (m == null) throw new Exception("The market with the given id doesn't exist");
+        Seller s = await GetSeller(email);
+        if (DateTime.Now > m.StartingTime) throw new Exception("The market has already begun");
+        if (m.Stands.Count == m.TotalStands) throw new Exception("The market has reached the maximum number of stands");
+        m.Stands.Add(new Stand
+        {
+            MarketId = id,SellerId = email,StandPhotoPath = standPhoto
+        }
+        );
+        _context.Markets.Update(m);
+        await _context.SaveChangesAsync();
+    }
 }

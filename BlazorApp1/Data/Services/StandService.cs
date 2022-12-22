@@ -24,4 +24,19 @@ public class StandService : IStandService
         Stand s = await GetStand(id);
         return s.ProductInStands.ToList();
     }
+
+    public async Task AddProductToStand(int productId, int standId,int amount)
+    {
+        Stand s = await GetStand(standId);
+        Product? p = await _context.Products.FindAsync(productId);
+        if (p == null) throw new Exception("No product exists with the given id");
+        if (p.ProductSeller != s.SellerId)
+            throw new Exception("The product doesn't belong to the same user as the stand");
+        if (amount > p.ProductStock) throw new Exception("There isn't enough of the product to add to the stand");
+        p.ProductStock -= amount;
+        _context.Products.Update(p);
+        ProductInStand pis = new ProductInStand { ProductId = productId, StandId = standId, Stock = amount };
+        await _context.ProductInStands.AddAsync(pis);
+        await _context.SaveChangesAsync();
+    }
 }
