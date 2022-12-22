@@ -31,5 +31,11 @@ public class OrganizerService : IOrganizerService
         await _context.Organizers.AddAsync(o);
         await _context.SaveChangesAsync();
     }
+
+    public async Task<List<Market>> GetOrganizerMarkets(string email)
+    {
+        Organizer o = await GetOrganizer(email);
+        return o.Markets.ToList();
+    }
     
 }

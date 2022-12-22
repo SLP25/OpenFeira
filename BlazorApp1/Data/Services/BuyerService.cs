@@ -1,3 +1,4 @@
+using System.Data.Entity;
 using BlazorApp1.Data.Context;
 using BlazorApp1.Data.Interfaces;
 
@@ -46,5 +47,9 @@ public class BuyerService : IBuyerService
         await _context.Buyers.AddAsync(b);
         await _context.SaveChangesAsync();
     }
-    
+
+    public async Task<List<Sale>> GetBuyerSales(string email)
+    {
+        return _context.Sales.Where(s => s.Bid.BuyerId == email).ToList();
+    }
 }
