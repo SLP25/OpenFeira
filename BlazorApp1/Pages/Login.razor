@@ -70,6 +70,6 @@
             Role = user.Role
         });
         
-        NavManager.NavigateTo("/main",true);
+        NavManager.NavigateTo(string.Format("{0}/main", user.Role.ToLower()),true);
     }
 }
