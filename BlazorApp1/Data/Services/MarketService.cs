@@ -1,14 +1,21 @@
 using BlazorApp1.Data.Context;
 using BlazorApp1.Data.Interfaces;
+using Microsoft.EntityFrameworkCore;
 
 namespace BlazorApp1.Data.Services;
 
 public class MarketService : IMarketService
 {
     private readonly OpenFeiraDbContext _context = new OpenFeiraDbContext();
+
+    public MarketService(OpenFeiraDbContext context)
+    {
+        _context = context;
+    }
+
     public async Task<Market> GetMarket(int id)
     {
-        Market? m = await _context.Markets.FindAsync(id);
+        Market? m = _context.Markets.Where(m => m.MarketId == id).Include("Stands").First();
         if (m == null) throw new Exception("No market with the given id exists");
         return m;
     }
