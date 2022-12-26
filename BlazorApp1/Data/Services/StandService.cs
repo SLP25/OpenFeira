@@ -1,5 +1,6 @@
 using BlazorApp1.Data.Context;
 using BlazorApp1.Data.Interfaces;
+using Microsoft.EntityFrameworkCore;
 
 namespace BlazorApp1.Data.Services;
 
@@ -7,9 +8,14 @@ public class StandService : IStandService
 {
     private readonly OpenFeiraDbContext _context = new OpenFeiraDbContext();
 
+    public StandService(OpenFeiraDbContext context)
+    {
+        _context = context;
+    }
+
     public async Task<Stand> GetStand(int id)
     {
-        Stand? s = await _context.Stands.FindAsync(id);
+        Stand? s = _context.Stands.Where(s => s.StandId == id).Include("Market").Include("Seller").Include("ProductInStands").First();
         if (s == null) throw new Exception("No stand exists with the given id");
         return s;
     }

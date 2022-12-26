@@ -1,0 +1,19 @@
+﻿<div class="block">
+    <a class="link" href="@Url">
+        <div class="wrapper">
+            <img class="image" src="@Photo">
+            <p>@Name <span class="blue">@Price €</span></p>
+        </div>
+    </a>
+    
+</div>
+@code {
+    [Parameter]
+    public string Name { get; set; }
+    [Parameter]
+    public string Photo { get; set; }
+    [Parameter]
+    public string Url { get; set; }
+    [Parameter]
+    public decimal Price { get; set; }
+}

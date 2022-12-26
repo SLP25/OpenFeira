@@ -1,0 +1,52 @@
+﻿@page "/buyer/stand/{StandIdString}"
+@using BlazorApp1.Data
+@using BlazorApp1.Data.Interfaces
+@using BlazorApp1.Authentication
+
+@inject IStandService StandService
+@inject IProductService ProductService
+@inject NavigationManager NavManager
+@inject AuthenticationStateProvider AuthStateProvider
+
+<BackofficeLayout Logo="true" BackArrow="true" PreviousText="" PreviousUrl="/" AuthorizedRoles="Buyer">
+    <Content>
+        <h3>@StandName</h3>
+        <ComponentList>
+            @foreach(Product p in Products)
+            {
+                <ComponentListItem>
+                   <ProductComponent Name="@p.ProductName" Photo="@p.ProductPhotos.First().ProductPhotoPath" Url="@(string.Format("/buyer/product/{0}", p.ProductId))" Price="@p.ProductBasePrice"></ProductComponent>
+                </ComponentListItem>
+            }
+        </ComponentList>
+
+    </Content>
+</BackofficeLayout>
+
+@code  {
+
+    public List<Product> Products { get; set; }
+    public string StandName { get; set; }
+    public string StandId { get; set; }
+    [Parameter]
+    public string StandIdString {get;set; }
+
+    protected async override void OnInitialized()
+    {
+        base.OnInitialized();
+        if(!int.TryParse(StandIdString, out int n)) {
+            NavManager.NavigateTo("/404");
+            return;
+        }
+        int standId = int.Parse(StandIdString);
+        Stand s = await StandService.GetStand(standId);
+
+        Products = new List<Product>();
+        foreach(ProductInStand ps in s.ProductInStands) {
+            Product p = await ProductService.GetProduct(ps.ProductId);
+            Products.Add(p);
+        }
+
+        StandName = string.Format("{0}: {1}", s.Market.MarketName, s.Seller.CompanyName);
+    }
+}
