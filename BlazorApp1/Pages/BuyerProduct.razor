@@ -1,4 +1,4 @@
-﻿@page "/buyer/product/{ProductIdString}"
+﻿@page "/buyer/product/{StandIdString}/{ProductIdString}"
 
 @using BlazorApp1.Data.Interfaces
 @using BlazorApp1.Data
@@ -6,6 +6,9 @@
 
 @inject AuthenticationStateProvider AuthStateProvider
 @inject IBuyerService BuyerService
+@inject IStandService StandService
+@inject IProductService ProductService
+@inject NavigationManager NavManager
 
 <BackofficeLayout Logo="true" BackArrow="true" PreviousText="" PreviousUrl="/" AuthorizedRoles="Buyer">
     <Content>
@@ -26,7 +29,7 @@
                             <div class="child">
                                 <input @bind="BidAmount" class="input-field" type="number" step="1" placeholder="Qt."/>
                                 <input @bind="BidPrice" class="input-field" type="number" placeholder="Valor Unitário"/>
-                                <button class="input-field submit">Confirmar</button>
+                                <button class="input-field submit" @onclick="Bid">Confirmar</button>
                             </div>
                             
                         </div>
@@ -36,7 +39,7 @@
                         <div class="form-wrapper" style="@(BuyVisible ? "" : "opacity: 0")">
                             <div class="child">
                                 <input @bind="BuyAmount" class="input-field" type="number" step="1" placeholder="Qt."/>
-                                <button class="input-field submit">Confirmar</button>
+                                <button class="input-field submit" @onclick="Buy">Confirmar</button>
                             </div>
                         </div>
                     </div> 
@@ -52,6 +55,8 @@
 
     [Parameter]
     public string ProductIdString { get; set; }
+    [Parameter]
+    public string StandIdString { get; set; }
     public Product Product { get; set; }
     public int StandId { get; set; }
     public bool BidVisible { get; set; }
@@ -63,15 +68,38 @@
     public int BuyAmount { get; set; }
 
 
-    protected override void OnInitialized()
+    protected async override void OnInitialized()
     {
         base.OnInitialized();
         BidVisible = false;
         BuyVisible = false;
-        BidAmount = 0;
-        BidPrice = 0.0m;
-        BuyAmount = 0;
 
+        try
+        {
+            StandId = int.Parse(StandIdString);
+            int productId = int.Parse(ProductIdString);
+            List<ProductInStand> products = await StandService.GetProductsInStand(StandId);
+
+            bool found = false;
+            foreach(ProductInStand ps in products)
+            {
+                if(ps.ProductId == productId)
+                {
+                    Product = await ProductService.GetProduct(ps.ProductId);
+                    found = true;
+                    break;
+                }
+            }
+
+            if(!found)
+            {
+                throw new Exception();
+            }
+        }
+        catch(Exception)
+        {
+            NavManager.NavigateTo("/404");
+        }
 
     }
 
@@ -99,11 +127,13 @@
     {
         string email = await GetUserEmail();
         await BuyerService.MakeBid(email, BidPrice, BidAmount, StandId, Product.ProductId);
+        InvertBidVisible();
     }
 
     public async void Buy()
     {
         string email = await GetUserEmail();
         await BuyerService.MakeBid(email, Product.ProductBasePrice, BuyAmount, StandId, Product.ProductId);
+        InvertBuyVisible();
     }
 }

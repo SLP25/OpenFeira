@@ -33,7 +33,7 @@ public class SellerService : ISellerService
 
     public async Task AcceptBid(int id)
     {
-        var bid = await _context.Bids.FindAsync(id);
+        var bid = _context.Bids.Where(b => b.BidId == id).Include("BidStandNavigation").First();
         if (bid == null)
             throw new Exception("Bid doesn't exist");
         var piss = await _context.ProductInStands.FindAsync(bid.BidProduct, bid.BidStand);
@@ -45,11 +45,13 @@ public class SellerService : ISellerService
             throw new Exception(
                 "The bid was invalid since there isn't enough stock to accept the bid (It was deleted)");
         }
-        bid.Sales.Add(new Sale
+        Sale sale = new Sale
         {
             Bid = bid,
-            Seller = bid.BidStandNavigation.Seller,
-        });
+            SellerId = bid.BidStandNavigation.SellerId
+        };
+        await _context.Sales.AddAsync(sale);
+        bid.Sale = sale;
         _context.Update(bid);
         await _context.SaveChangesAsync();
     }

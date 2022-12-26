@@ -15,7 +15,7 @@
             @foreach(Product p in Products)
             {
                 <ComponentListItem>
-                   <ProductComponent Name="@p.ProductName" Photo="@p.ProductPhotos.First().ProductPhotoPath" Url="@(string.Format("/buyer/product/{0}", p.ProductId))" Price="@p.ProductBasePrice"></ProductComponent>
+                   <ProductComponent Name="@p.ProductName" Photo="@p.ProductPhotos.First().ProductPhotoPath" Url="@(string.Format("/buyer/product/{0}/{1}", StandIdString, p.ProductId))" Price="@p.ProductBasePrice"></ProductComponent>
                 </ComponentListItem>
             }
         </ComponentList>
