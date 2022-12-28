@@ -15,7 +15,7 @@ public class SellerService : ISellerService
 
     public async Task<Seller> GetSeller(string email)
     {
-        var seller = await _context.Sellers.FindAsync(email);
+        var seller = _context.Sellers.Where(s => s.UserEmail == email).Include("Products").First();
         
         if (seller == null) throw new Exception("Seller doesn't exist");
         

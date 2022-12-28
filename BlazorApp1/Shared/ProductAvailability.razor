@@ -1,0 +1,16 @@
+﻿@using BlazorApp1.Data.Interfaces
+
+<div class="block">
+    <div class="wrapper">
+        <p class="available">@Availability Disponíveis</p>
+        <img class="image" src="@Photo">
+    </div>
+</div>
+
+@code {
+    [ParameterAttribute]
+    public string Photo { get; set; }
+    [ParameterAttribute]
+    public int Availability { get; set; }
+
+}

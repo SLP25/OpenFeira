@@ -1,0 +1,38 @@
+﻿@page "/seller/markets"
+
+@using BlazorApp1.Data
+@using BlazorApp1.Data.Interfaces
+@using BlazorApp1.Authentication
+
+@inject IMarketService MarketService
+@inject NavigationManager NavManager
+
+<BackofficeLayout Logo="true" BackArrow="true" PreviousText="" PreviousUrl="/" AuthorizedRoles="Seller">
+    <Content>
+        <h3>Feiras</h3>
+        <ComponentList>
+            @foreach(Market m in Markets)
+            {
+                <ComponentListItem>
+                   <MarketComponent Url="" Name="@m.MarketName" Photo="@m.MarketPhotoPath" StartTime="@m.StartingTime" EndTime="@m.EndingTime" Online="@(m.MarketLocation == null)"></MarketComponent>
+
+                   <a class="participate" href="(@string.Format("/seller/participate/{0}", m.MarketId)">
+                       <i class="fas fa-share-square"></i>  Participar
+                   </a>
+                </ComponentListItem>
+            }
+        </ComponentList>
+
+    </Content>
+</BackofficeLayout>
+
+@code {
+    public List<Market> Markets { get; set; }
+
+    protected override void OnInitialized()
+    {
+        base.OnInitialized();
+
+        Markets = MarketService.GetMarkets();
+    }
+}
