@@ -50,6 +50,8 @@ public class SellerService : ISellerService
             Bid = bid,
             SellerId = bid.BidStandNavigation.SellerId
         };
+        piss.Stock -= bid.BidAmount;
+        _context.Update(piss);
         await _context.Sales.AddAsync(sale);
         bid.Sale = sale;
         _context.Update(bid);

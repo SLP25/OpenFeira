@@ -16,13 +16,13 @@ public class BuyerService : IBuyerService
     public async Task<Buyer> GetBuyer(string email)
     {
         var buyer = await _context.Buyers.FindAsync(email);
-        
+
         if (buyer == null) throw new Exception("Seller doesn't exist");
-        
+
         return buyer;
     }
 
-    public async Task MakeBid(string email, decimal price,int amount, int standId, int productId)
+    public async Task MakeBid(string email, decimal price, int amount, int standId, int productId)
     {
         Buyer b = await GetBuyer(email);
 
@@ -33,9 +33,11 @@ public class BuyerService : IBuyerService
         Product p = await _context.Products.FindAsync(productId);
 
         Sale sale = null;
-        Bid bid = new Bid { BidAmount = amount, BidProduct = productId, BidStand = standId, BuyerId = email, Price = price };
+        Bid bid = new Bid
+            { BidAmount = amount, BidProduct = productId, BidStand = standId, BuyerId = email, Price = price };
 
-        Stand stand = await _context.Stands.FindAsync(standId);
+        Stand? stand = await _context.Stands.FindAsync(standId);
+        if (stand == null) throw new Exception("Stand of product doesn't exist");
         if (price >= p.ProductBasePrice)
         {
             sale = new Sale
@@ -43,6 +45,8 @@ public class BuyerService : IBuyerService
                 Bid = bid,
                 SellerId = stand.SellerId
             };
+            piss.Stock -= amount;
+            _context.Update(piss);
             _context.Add(sale);
         }
 
@@ -58,7 +62,6 @@ public class BuyerService : IBuyerService
         {
             UserEmailNavigation = new User
             {
-
                 Nif = nif,
                 UserEmail = email,
                 PasswordHash = User.EncryptPassword(password)
