@@ -94,4 +94,41 @@ public class SellerService : ISellerService
         _context.Markets.Update(m);
         await _context.SaveChangesAsync();
     }
+
+    public async Task RegisterSellerInMarket(string email, int id, string standPhoto, Dictionary<int, int> productsAmounts)
+    {
+        _context.Database.BeginTransaction();
+        Market? m = await _context.Markets.FindAsync(id);
+        if (m == null) throw new Exception("The market with the given id doesn't exist");
+        Seller seller = await GetSeller(email);
+        if (DateTime.Now > m.StartingTime) throw new Exception("The market has already begun");
+        if (m.Stands.Count == m.TotalStands) throw new Exception("The market has reached the maximum number of stands");
+        Stand stand = new Stand
+        {
+            MarketId = id, SellerId = email, StandPhotoPath = standPhoto
+        };
+        m.Stands.Add(stand);
+        _context.Markets.Update(m);
+        await _context.SaveChangesAsync();
+        Stand s = _context.Stands.Where(s => s.SellerId == email).Where(s => s.MarketId == id).First();
+        foreach (var productAmount in productsAmounts)
+        {
+            int amount = productAmount.Key;
+            int productId = productAmount.Value;
+            if (amount <= 0) throw new Exception("The amount must be bigger than 0");
+            Product? p = await _context.Products.FindAsync(productId);
+            if (p == null) throw new Exception("No product exists with the given id");
+            if (p.ProductSeller != s.SellerId)
+                throw new Exception("The product doesn't belong to the same user as the stand");
+            if (amount > p.ProductStock) throw new Exception("There isn't enough of the product to add to the stand");
+            p.ProductStock -= amount;
+            _context.Products.Update(p);
+            ProductInStand pis = new ProductInStand { ProductId = productId, StandId = s.StandId, Stock = amount };
+            await _context.ProductInStands.AddAsync(pis);
+        }
+        await _context.SaveChangesAsync();
+        await _context.Database.CommitTransactionAsync();
+    }
+    
+    
 }
