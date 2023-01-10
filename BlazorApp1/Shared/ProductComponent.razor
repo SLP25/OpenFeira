@@ -2,7 +2,14 @@
     <a class="link" href="@Url">
         <div class="wrapper">
             <img class="image" src="@Photo">
-            <p>@Name <span class="blue">@Price €</span></p>
+            @if (@Stock != 0)
+            {
+                <p>@Name <span class="blue">@Price €</span> <span class="green"> @Stock </span> </p>
+            }
+            else
+            {
+                <p>@Name <span class="blue">@Price €</span> <span class="red"> @Stock </span> </p>
+            }
         </div>
     </a>
     
@@ -16,4 +23,6 @@
     public string Url { get; set; }
     [Parameter]
     public decimal Price { get; set; }
+    [Parameter]
+    public int Stock { get; set; }
 }

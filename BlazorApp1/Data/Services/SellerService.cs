@@ -28,7 +28,7 @@ public class SellerService : ISellerService
     }
     public async Task<List<Bid>> GetSellerActiveBids(string email)
     {
-        return _context.Bids.Where(b => b.SaleId == null).Where(b=>b.BidStandNavigation.Seller.UserEmail == email).Include("BidProductNavigation").ToList();
+        return _context.Bids.Where(b => b.Sale == null).Where(b=>b.BidStandNavigation.Seller.UserEmail == email).Include("BidProductNavigation").ToList();
     }
 
     public async Task AcceptBid(int id)
@@ -36,7 +36,9 @@ public class SellerService : ISellerService
         var bid = _context.Bids.Where(b => b.BidId == id).Include("BidStandNavigation").First();
         if (bid == null)
             throw new Exception("Bid doesn't exist");
-        var piss = await _context.ProductInStands.FindAsync(bid.BidProduct, bid.BidStand);
+        if (_context.Sales.Count(s => s.BidId == id) != 0)
+            throw new Exception("Bid already accepted");
+        var piss = await _context.ProductInStands.FindAsync( bid.BidStand,bid.BidProduct);
         if (piss == null) throw new Exception("product does not Exist u did shit in the db to get this error");
         if (bid.BidAmount > piss.Stock)
         {
@@ -95,7 +97,7 @@ public class SellerService : ISellerService
         await _context.SaveChangesAsync();
     }
 
-    public async Task RegisterSellerInMarket(string email, int id, string standPhoto, Dictionary<int, int> productsAmounts)
+    public async Task RegisterSellerInMarket(string email, int id, string standPhoto ,List<int> products ,List<int> quantities)
     {
         _context.Database.BeginTransaction();
         Market? m = await _context.Markets.FindAsync(id);
@@ -103,6 +105,8 @@ public class SellerService : ISellerService
         Seller seller = await GetSeller(email);
         if (DateTime.Now > m.StartingTime) throw new Exception("The market has already begun");
         if (m.Stands.Count == m.TotalStands) throw new Exception("The market has reached the maximum number of stands");
+        if (_context.Stands.Count(s => s.SellerId==email && s.MarketId==id)!=0)
+            throw new Exception("The user is already participating");
         Stand stand = new Stand
         {
             MarketId = id, SellerId = email, StandPhotoPath = standPhoto
@@ -111,20 +115,23 @@ public class SellerService : ISellerService
         _context.Markets.Update(m);
         await _context.SaveChangesAsync();
         Stand s = _context.Stands.Where(s => s.SellerId == email).Where(s => s.MarketId == id).First();
-        foreach (var productAmount in productsAmounts)
+        foreach (var item in products.Select((value, i) => (value, i)))
         {
-            int amount = productAmount.Key;
-            int productId = productAmount.Value;
-            if (amount <= 0) throw new Exception("The amount must be bigger than 0");
-            Product? p = await _context.Products.FindAsync(productId);
-            if (p == null) throw new Exception("No product exists with the given id");
-            if (p.ProductSeller != s.SellerId)
-                throw new Exception("The product doesn't belong to the same user as the stand");
-            if (amount > p.ProductStock) throw new Exception("There isn't enough of the product to add to the stand");
-            p.ProductStock -= amount;
-            _context.Products.Update(p);
-            ProductInStand pis = new ProductInStand { ProductId = productId, StandId = s.StandId, Stock = amount };
-            await _context.ProductInStands.AddAsync(pis);
+            int amount = quantities[item.i];
+            int productId = item.value;
+            if (amount > 0)
+            {
+                Product? p = await _context.Products.FindAsync(productId);
+                if (p == null) throw new Exception("No product exists with the given id");
+                if (p.ProductSeller != s.SellerId)
+                    throw new Exception("The product doesn't belong to the same user as the stand");
+                if (amount > p.ProductStock)
+                    throw new Exception("There isn't enough of the product to add to the stand");
+                p.ProductStock -= amount;
+                _context.Products.Update(p);
+                ProductInStand pis = new ProductInStand { ProductId = productId, StandId = s.StandId, Stock = amount };
+                await _context.ProductInStands.AddAsync(pis);
+            }
         }
         await _context.SaveChangesAsync();
         await _context.Database.CommitTransactionAsync();

@@ -15,7 +15,5 @@ public partial class Sale
 
     public virtual Bid Bid { get; set; } = null!;
 
-    public virtual ICollection<Bid> Bids { get; } = new List<Bid>();
-
     public virtual Seller Seller { get; set; } = null!;
 }

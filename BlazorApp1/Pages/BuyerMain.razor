@@ -14,7 +14,7 @@
             @foreach(Market m in Markets)
             {
                 <ComponentListItem>
-                   <MarketComponent Url="@string.Format("/buyer/market/{0}", m.MarketId)" Name="@m.MarketName" Photo="@m.MarketPhotoPath" StartTime="@m.StartingTime" EndTime="@m.EndingTime" Online="@(m.MarketLocation == null)"></MarketComponent>
+                   <MarketComponent Url="@string.Format("/buyer/market/{0}", m.MarketId)" Name="@m.MarketName" Photo="@m.MarketPhotoPath" StartTime="@m.StartingTime" EndTime="@m.EndingTime" Online="@m.MarketLocation" disabled="@(m.StartingTime>=DateTime.Now || DateTime.Now>=m.EndingTime)"></MarketComponent>
                 </ComponentListItem>
             }
         </ComponentList>

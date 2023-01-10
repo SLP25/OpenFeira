@@ -6,7 +6,7 @@
 @inject ISellerService SellerService
 @inject AuthenticationStateProvider AuthStateProvider
 
-<BackofficeLayout Logo="true" BackArrow="true" PreviousText="" PreviousUrl="/" AuthorizedRoles="Seller">
+<BackofficeLayout Logo="true" BackArrow="true" PreviousText="" PreviousUrl="/seller/main" AuthorizedRoles="Seller">
     <Content>
         <h3>Ofertas Pendentes</h3>
         <ComponentList>
@@ -23,17 +23,19 @@
 </BackofficeLayout>
 
 @code {
-    public List<Bid> PendingBids { get; set; }
+    public List<Bid> PendingBids { get; set; } = new List<Bid>();
 
-    [CascadingParameter]
-    private Task<AuthenticationState> authenticationState { get; set; }
-
-    protected async override void OnInitialized()
+    protected override async Task OnAfterRenderAsync(bool firstRender)
     {
-        base.OnInitialized();
-        var customAuthStateProvider = (CustomAuthenticationStateProvider)AuthStateProvider;
-        var authState = await authenticationState;
-        string email = authState.User.Identity.Name;
-        PendingBids = await SellerService.GetSellerActiveBids(email);
+        if (firstRender)
+        {
+            var buyer = await ((CustomAuthenticationStateProvider)AuthStateProvider).GetUsername();
+            if (buyer == null) PendingBids = new List<Bid>();
+            var bids = await SellerService.GetSellerActiveBids(buyer);
+            if (bids == null) PendingBids = new List<Bid>();
+            else PendingBids = bids;
+            StateHasChanged();
+        }
     }
+
 }

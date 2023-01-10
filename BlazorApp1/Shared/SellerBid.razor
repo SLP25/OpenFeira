@@ -24,6 +24,10 @@
 
     public async Task AcceptBid()
     {
-        SellerService.AcceptBid(Id);
+        try
+        {
+            await SellerService.AcceptBid(Id);
+        }catch(Exception){}
+        StateHasChanged();
     }
 }

@@ -10,16 +10,16 @@
 @inject IProductService ProductService
 @inject NavigationManager NavManager
 
-<BackofficeLayout Logo="true" BackArrow="true" PreviousText="" PreviousUrl="/" AuthorizedRoles="Buyer">
+<BackofficeLayout Logo="true" BackArrow="true" PreviousText="" PreviousUrl=@("/buyer/stand/"+StandIdString) AuthorizedRoles="Buyer">
     <Content>
         <div class="wrapper">
             <div class="col">
-                <img class="image" src="/img/batata.jpg" />
+                <img class="image" src="@Product.ProductPhotos.First().ProductPhotoPath" />
             </div>
             <div class="col">
-                <h1 class="product-name">Uma batata</h1>
-                <h2 class="subtitle"><span class="blue">Bace</span> quer 99.99€</h2>
-                <p class="description">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Etiam vel enim porta, auctor purus sodales, efficitur diam. Phasellus faucibus sodales luctus. Cras quis libero justo. Mauris sapien dolor, placerat at accumsan quis, lobortis eget erat. Pellentesque porta ipsum quam, nec </p>
+                <h1 class="product-name">@Product.ProductName</h1>
+                <h2 class="subtitle"><span class="blue">@Product.ProductSeller</span> quer @Product.ProductBasePrice €</h2>
+                <p class="description"> @Product.ProductDescription </p>
 
 
                 <div class="flex col button-wrapper">
@@ -50,13 +50,13 @@
 </BackofficeLayout>
 
 @code {
-    [CascadingParameter]
-    private Task<AuthenticationState> authenticationState { get; set; }
 
     [Parameter]
     public string ProductIdString { get; set; }
     [Parameter]
     public string StandIdString { get; set; }
+    
+    public string? Buyer { get; set; }
     public Product Product { get; set; }
     public int StandId { get; set; }
     public bool BidVisible { get; set; }
@@ -66,6 +66,16 @@
     public int BidAmount { get; set; }
     public decimal BidPrice { get; set; }
     public int BuyAmount { get; set; }
+    
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            Buyer = await ((CustomAuthenticationStateProvider)AuthStateProvider).GetUsername();
+            if (Buyer == null) NavManager.NavigateTo("/404");
+            StateHasChanged();
+        }
+    }
 
 
     protected async override void OnInitialized()
@@ -103,14 +113,6 @@
 
     }
 
-    private async Task<string> GetUserEmail()
-    {
-        var customAuthStateProvider = (CustomAuthenticationStateProvider)AuthStateProvider;
-        var authState = await authenticationState;
-        string email = authState.User.Identity.Name;
-        return email;
-    }
-
     public void InvertBidVisible()
     {
         BidVisible = !BidVisible;
@@ -125,15 +127,13 @@
 
     public async void Bid()
     {
-        string email = await GetUserEmail();
-        await BuyerService.MakeBid(email, BidPrice, BidAmount, StandId, Product.ProductId);
+        await BuyerService.MakeBid(Buyer, BidPrice, BidAmount, StandId, Product.ProductId);
         InvertBidVisible();
     }
 
     public async void Buy()
     {
-        string email = await GetUserEmail();
-        await BuyerService.MakeBid(email, Product.ProductBasePrice, BuyAmount, StandId, Product.ProductId);
+        await BuyerService.MakeBid(Buyer, Product.ProductBasePrice*BuyAmount, BuyAmount, StandId, Product.ProductId);
         InvertBuyVisible();
     }
 }

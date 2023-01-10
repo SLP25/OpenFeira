@@ -9,6 +9,6 @@ public interface ISellerService
     public Task CreateSeller(string email, string password,int nif,string name,string? companyName,string? phoneNumber,string? website);
     public Task RegisterSellerInMarket(string email, int id,string standPhoto);
 
-    public Task RegisterSellerInMarket(string email, int id, string standPhoto,
-        Dictionary<int, int> productsAmounts);
+    public Task RegisterSellerInMarket(string email, int id, string standPhoto, List<int> products,
+        List<int> quantities);
 }

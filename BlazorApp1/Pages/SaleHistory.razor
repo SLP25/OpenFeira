@@ -5,8 +5,9 @@
 
 @inject AuthenticationStateProvider AuthStateProvider
 @inject ISellerService SellerService
+@inject NavigationManager NavManager
 
-<BackofficeLayout Logo="true" BackArrow="true" PreviousText="" PreviousUrl="/" AuthorizedRoles="Seller">
+<BackofficeLayout Logo="true" BackArrow="true" PreviousText="" PreviousUrl="/seller/main" AuthorizedRoles="Seller">
     <Content>
         <h2>Histórico de Vendas</h2>
         <div class="table-wrapper">
@@ -80,18 +81,24 @@
    
 
 @code {
-    public List<Sale> Sales { get; set; }
+    public List<Sale> Sales { get; set; } = new List<Sale>();
 
-    [CascadingParameter]
-    private Task<AuthenticationState> authenticationState { get; set; }
-
-    protected override async void OnInitialized()
+    protected override async Task OnAfterRenderAsync(bool firstRender)
     {
-        base.OnInitialized();
-        var customAuthStateProvider = (CustomAuthenticationStateProvider)AuthStateProvider;
-        var authState = await authenticationState;
-        string email = authState.User.Identity.Name;
-        Sales = await SellerService.GetSellerSales(email);
-
+        if (firstRender)
+        {
+            try
+            {
+                string email = await ((CustomAuthenticationStateProvider)AuthStateProvider).GetUsername();
+                if (email == null) throw new Exception();
+                Sales = await SellerService.GetSellerSales(email);
+            }
+            catch (Exception)
+            {
+                NavManager.NavigateTo("/404");
+            }
+        }
+        StateHasChanged();
     }
+
 }

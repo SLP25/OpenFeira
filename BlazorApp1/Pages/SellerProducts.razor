@@ -1,0 +1,47 @@
+﻿@page "/seller/products"
+
+@using BlazorApp1.Data
+@using BlazorApp1.Data.Interfaces
+@using BlazorApp1.Authentication
+
+@inject IProductService ProductService
+@inject ISellerService SellerService
+@inject NavigationManager NavManager
+@inject AuthenticationStateProvider AuthStateProvider
+<BackofficeLayout Logo="true" BackArrow="true" PreviousText="" PreviousUrl="/seller/main" AuthorizedRoles="Seller">
+    <Content>
+        <h3>Produtos</h3>
+        <ComponentList>
+            @if (Products!=null)
+            {
+                @foreach (Product p in Products)
+                {
+                    <ComponentListItem>
+                        <ProductComponent Stock="@p.ProductStock" Name="@p.ProductName" Price="@p.ProductBasePrice" Photo="@p.ProductPhotos.First().ProductPhotoPath" Url=@("/seller/products/{" + p.ProductId + "}")></ProductComponent>
+                    </ComponentListItem>
+                }
+            }
+        </ComponentList>
+        <div class="button-wrapper">
+            <a class="link" href="/seller/addProduct">Adicionar Produto</a>
+        </div>
+    </Content>
+</BackofficeLayout>
+
+@code {
+    public List<Product> Products { get; set; }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            var seller = await ((CustomAuthenticationStateProvider)AuthStateProvider).GetUsername();
+            if (seller == null) Products = new List<Product>();
+            var products = await ProductService.getProductsOfSeller(seller);
+            if (products == null) Products = new List<Product>();
+            else Products = products;
+            StateHasChanged();
+        }
+    }
+    
+}

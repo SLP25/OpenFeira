@@ -7,16 +7,16 @@
 @inject IMarketService MarketService
 @inject NavigationManager NavManager
 
-<BackofficeLayout Logo="true" BackArrow="true" PreviousText="" PreviousUrl="/" AuthorizedRoles="Seller">
+<BackofficeLayout Logo="true" BackArrow="true" PreviousText="" PreviousUrl="/seller/main" AuthorizedRoles="Seller">
     <Content>
         <h3>Feiras</h3>
         <ComponentList>
             @foreach(Market m in Markets)
             {
                 <ComponentListItem>
-                   <MarketComponent Url="" Name="@m.MarketName" Photo="@m.MarketPhotoPath" StartTime="@m.StartingTime" EndTime="@m.EndingTime" Online="@(m.MarketLocation == null)"></MarketComponent>
+                   <MarketComponent Url="" Name="@m.MarketName" Photo="@m.MarketPhotoPath" StartTime="@m.StartingTime" EndTime="@m.EndingTime" Online="@m.MarketLocation" disabled="true"></MarketComponent>
 
-                   <a class="participate" href="(@string.Format("/seller/participate/{0}", m.MarketId)">
+                   <a class="participate" href="@string.Format("/seller/participate/{0}", m.MarketId)" aria-disabled="@(m.StartingTime<=DateTime.Now)" >
                        <i class="fas fa-share-square"></i>  Participar
                    </a>
                 </ComponentListItem>

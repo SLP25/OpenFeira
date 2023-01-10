@@ -26,7 +26,7 @@ public class BuyerService : IBuyerService
     {
         Buyer b = await GetBuyer(email);
 
-        ProductInStand? piss = await _context.ProductInStands.FindAsync(productId, standId);
+        ProductInStand? piss = await _context.ProductInStands.FindAsync( standId,productId);
         if (piss == null) throw new Exception("Product doesn't exist in the stand");
         if (amount > piss.Stock) throw new Exception("There isn't enough of that product in the stand");
 
@@ -38,7 +38,8 @@ public class BuyerService : IBuyerService
 
         Stand? stand = await _context.Stands.FindAsync(standId);
         if (stand == null) throw new Exception("Stand of product doesn't exist");
-        if (price >= p.ProductBasePrice)
+        _context.Add(bid);
+        if (price/amount >= p.ProductBasePrice)
         {
             sale = new Sale
             {
@@ -48,9 +49,10 @@ public class BuyerService : IBuyerService
             piss.Stock -= amount;
             _context.Update(piss);
             _context.Add(sale);
+            bid.Sale = sale;
+            _context.Update(bid);
         }
-
-        _context.Add(bid);
+        
         await _context.SaveChangesAsync();
     }
 

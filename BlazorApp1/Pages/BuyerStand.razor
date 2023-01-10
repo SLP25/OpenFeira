@@ -8,14 +8,14 @@
 @inject NavigationManager NavManager
 @inject AuthenticationStateProvider AuthStateProvider
 
-<BackofficeLayout Logo="true" BackArrow="true" PreviousText="" PreviousUrl="/" AuthorizedRoles="Buyer">
+<BackofficeLayout Logo="true" BackArrow="true" PreviousText="" PreviousUrl=@("/buyer/market/"+marketId) AuthorizedRoles="Buyer">
     <Content>
         <h3>@StandName</h3>
         <ComponentList>
-            @foreach(Product p in Products)
+            @foreach(var p in Products.Select((value, i) => (value, i)))
             {
                 <ComponentListItem>
-                   <ProductComponent Name="@p.ProductName" Photo="@p.ProductPhotos.First().ProductPhotoPath" Url="@(string.Format("/buyer/product/{0}/{1}", StandIdString, p.ProductId))" Price="@p.ProductBasePrice"></ProductComponent>
+                   <ProductComponent Stock="@Stocks[p.i]" Name="@p.value.ProductName" Photo="@p.value.ProductPhotos.First().ProductPhotoPath" Url="@(string.Format("/buyer/product/{0}/{1}", StandIdString, p.value.ProductId))" Price="@p.value.ProductBasePrice"></ProductComponent>
                 </ComponentListItem>
             }
         </ComponentList>
@@ -24,10 +24,13 @@
 </BackofficeLayout>
 
 @code  {
-
+    
+    public Stand Stand { get; set; }
     public List<Product> Products { get; set; }
+    public List<int> Stocks { get; set; }
     public string StandName { get; set; }
     public string StandId { get; set; }
+    public string marketId { get; set; } = "";
     [Parameter]
     public string StandIdString {get;set; }
 
@@ -40,11 +43,14 @@
         }
         int standId = int.Parse(StandIdString);
         Stand s = await StandService.GetStand(standId);
+        marketId = s.MarketId.ToString();
 
         Products = new List<Product>();
-        foreach(ProductInStand ps in s.ProductInStands) {
+        Stocks = new List<int>();
+        foreach(var ps in s.ProductInStands) {
             Product p = await ProductService.GetProduct(ps.ProductId);
             Products.Add(p);
+            Stocks.Add(ps.Stock);
         }
 
         StandName = string.Format("{0}: {1}", s.Market.MarketName, s.Seller.CompanyName);

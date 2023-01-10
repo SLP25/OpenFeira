@@ -37,6 +37,23 @@ public class CustomAuthenticationStateProvider : AuthenticationStateProvider
         }
     }
 
+    public async Task<String?> GetUsername()
+    {
+        try
+        {
+            var userSessionStorageResult = await _sessionStorage.GetAsync<UserSession>("UserSession");
+            var userSession = userSessionStorageResult.Success ? userSessionStorageResult.Value : null;
+            if (userSession == null)
+                return null;
+            return userSession.Email;
+
+        }
+        catch
+        {
+            return null;
+        }
+    }
+
     public async Task UpdateAuthenticationState(UserSession userSession)
     {
         ClaimsPrincipal claimsPrincipal;

@@ -23,7 +23,7 @@ public class ProductService : IProductService
     public async Task CreateProduct(string seller, string desc, decimal price, string name, int stock,
         List<String> imagePaths)
     {
-        Seller? s = await _context.Sellers.FindAsync(seller);
+        Seller? s = _context.Sellers.Find(seller);
         if (s == null) throw new Exception("There is no seller with the given email");
         Product p = new Product
         {
@@ -39,7 +39,7 @@ public class ProductService : IProductService
             _context.ProductPhotos.Add(new ProductPhoto { Product = p, ProductPhotoPath = image });
         }
 
-        await _context.SaveChangesAsync();
+        _context.SaveChanges();
     }
 
 
@@ -64,6 +64,12 @@ public class ProductService : IProductService
             }
         }
         await _context.SaveChangesAsync();
+    }
+
+    public async Task<List<Product>> getProductsOfSeller(string seller)
+    {
+        List<Product> p = _context.Products.Where(p => p.ProductSeller == seller).Include("ProductPhotos").ToList();
+        return p;
     }
 
 }

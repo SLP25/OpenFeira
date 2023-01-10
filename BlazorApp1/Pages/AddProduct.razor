@@ -1,0 +1,134 @@
+﻿@page "/seller/addProduct"
+
+@using BlazorApp1.Data
+@using BlazorApp1.Data.Interfaces
+@using BlazorApp1.Authentication
+@using Microsoft.AspNetCore.Components.Forms
+
+@inject IMarketService MarketService
+@inject ISellerService SellerService
+@inject IProductService ProductService
+@inject NavigationManager NavManager
+@inject AuthenticationStateProvider AuthStateProvider
+
+<BackofficeLayout Logo="true" BackArrow="true" PreviousText="" PreviousUrl="/seller/products" AuthorizedRoles="Seller">
+    <Content>
+        <h3>Adicionar Produto</h3>
+        <EditForm Model="@model" OnValidSubmit="@CreateProduct">
+            @if (model.FailedTOAdd)
+            {
+                <span class="add-failed">Algum dos dados está incorreto</span>
+            }
+            @if (model.AddedWithSuccess)
+            {
+                <span class="add-sucess">Produto adicionado com successo</span> //sucesium
+            }
+            <h2>Nome:</h2>
+            <InputText  @bind-Value="@model.Name" placeholder="Nome do produto"/>
+            <h2>Descrição:</h2>
+            <InputText @bind-Value="@model.Description" placeholder="Descrição do produto"/>
+            <h2>Preço sugerido:</h2>
+            <InputNumber @bind-Value="@model.BasePrice" Min="0" Max="99999999" placeholder="Preço sugerido aos clientes"/>
+            <h2>Stock:</h2>
+            <InputNumber @bind-Value="@model.Stock" Min="0" Max="99999999" placeholder="Quantidade disponivel do produto"/>
+            <h2>Imagens:</h2>
+
+            <ComponentList>
+                @foreach (var item in @model.Images)
+                {
+                    <ComponentListItem>
+                        <ListOfImagesComponent Photo=@item></ListOfImagesComponent>
+                    </ComponentListItem>
+                }
+            </ComponentList>
+            <InputText  @bind-Value="@model.CurrImage" placeholder="Nova imagem"/>
+            <button @onclick="@AddImage" @onclick:preventDefault >+</button>
+            <div class="button-wrapper">
+                <button class="addProduct">Adicionar</button>
+            </div>
+        </EditForm>
+    </Content>
+</BackofficeLayout>
+
+@code
+{
+    public class Model
+    {
+        public string? Seller { get; set; }
+        public string Name { get; set; }
+        public string Description { get; set; }
+        public decimal BasePrice { get; set; }
+        public int Stock { get; set; }
+        public bool FailedTOAdd { get; set; }
+        public bool AddedWithSuccess { get; set; }
+        public List<String> Images { get; set; }
+        public string CurrImage { get; set; }
+
+        public Model()
+        {
+            CurrImage = "";
+            Seller = "";
+            Name = "";
+            Description = "";
+            BasePrice = (decimal) 00.00;
+            Stock = 0;
+            Images = new List<string>();
+            FailedTOAdd = false;
+            AddedWithSuccess = false;
+        }
+    }
+
+    private Model model = new Model();
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            model.Seller = await ((CustomAuthenticationStateProvider)AuthStateProvider).GetUsername();
+            StateHasChanged();
+        }
+    }
+
+
+    private async Task CreateProduct()
+    {
+        model.FailedTOAdd = false;
+        model.AddedWithSuccess = false;
+
+        if (model.Seller == null || model.Images.Count==0)
+        {
+            model.FailedTOAdd = true;
+            return;
+        }
+        if (Decimal.Round(model.BasePrice, 2) == model.BasePrice)
+        {
+            try
+            {
+                await ProductService.CreateProduct(
+                    model.Seller,
+                    model.Description,
+                    model.BasePrice,
+                    model.Name,
+                    model.Stock,
+                    model.Images
+                    );
+                model.AddedWithSuccess = true;
+            }
+            catch (InvalidCastException e)
+            {
+                model.FailedTOAdd = true;
+            }
+        }
+        else
+        {
+            model.FailedTOAdd = true;
+        }
+    }
+
+    private void AddImage()
+    {
+        model.Images.Add(model.CurrImage);
+        model.CurrImage = string.Empty;
+    }
+
+}

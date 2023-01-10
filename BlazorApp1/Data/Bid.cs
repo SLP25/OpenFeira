@@ -19,7 +19,7 @@ public partial class Bid
 
     public int BidAmount { get; set; }
 
-    public int? SaleId { get; set; }
+
 
     public virtual Product BidProductNavigation { get; set; } = null!;
 
@@ -28,6 +28,4 @@ public partial class Bid
     public virtual Buyer Buyer { get; set; } = null!;
 
     public virtual Sale? Sale { get; set; }
-
-    public virtual ICollection<Sale> Sales { get; } = new List<Sale>();
 }

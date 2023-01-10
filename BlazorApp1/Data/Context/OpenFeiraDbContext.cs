@@ -52,17 +52,16 @@ public partial class OpenFeiraDbContext : DbContext
             entity.Property(e => e.BidProduct).HasColumnName("bid_product");
             entity.Property(e => e.BidStand).HasColumnName("bid_stand");
             entity.Property(e => e.BidTimestamp)
+                .HasDefaultValueSql("(getdate())")
                 .HasColumnType("datetime")
-                .HasDefaultValueSql("GETDATE()")
                 .HasColumnName("bid_timestamp");
             entity.Property(e => e.BuyerId)
                 .HasMaxLength(50)
                 .IsUnicode(false)
                 .HasColumnName("buyer_id");
             entity.Property(e => e.Price)
-                .HasColumnType("decimal(2, 0)")
+                .HasColumnType("decimal(10, 2)")
                 .HasColumnName("price");
-            entity.Property(e => e.SaleId).HasColumnName("sale_id");
 
             entity.HasOne(d => d.BidProductNavigation).WithMany(p => p.Bids)
                 .HasForeignKey(d => d.BidProduct)
@@ -78,10 +77,6 @@ public partial class OpenFeiraDbContext : DbContext
                 .HasForeignKey(d => d.BuyerId)
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("FK_Bid_Buyer");
-
-            entity.HasOne(d => d.Sale).WithMany(p => p.Bids)
-                .HasForeignKey(d => d.SaleId)
-                .HasConstraintName("FK_Bid_Sale");
         });
 
         modelBuilder.Entity<Buyer>(entity =>
@@ -110,7 +105,7 @@ public partial class OpenFeiraDbContext : DbContext
             entity.ToTable("Market");
 
             entity.Property(e => e.MarketId)
-                .ValueGeneratedOnAdd()
+                .ValueGeneratedOnAdd()  
                 .HasColumnName("market_id");
             entity.Property(e => e.EndingTime)
                 .HasColumnType("datetime")
@@ -175,7 +170,7 @@ public partial class OpenFeiraDbContext : DbContext
                 .ValueGeneratedOnAdd()
                 .HasColumnName("product_id");
             entity.Property(e => e.ProductBasePrice)
-                .HasColumnType("decimal(2, 0)")
+                .HasColumnType("decimal(10, 2)")
                 .HasColumnName("product_base_price");
             entity.Property(e => e.ProductDescription)
                 .HasMaxLength(255)
@@ -259,6 +254,8 @@ public partial class OpenFeiraDbContext : DbContext
         modelBuilder.Entity<Sale>(entity =>
         {
             entity.ToTable("Sale");
+            
+            entity.HasIndex(e => e.BidId, "UQ__Sale__3DF045972B75B0FD").IsUnique();
 
             entity.Property(e => e.SaleId)
                 .ValueGeneratedOnAdd()
@@ -266,15 +263,15 @@ public partial class OpenFeiraDbContext : DbContext
             entity.Property(e => e.BidId).HasColumnName("bid_id");
             entity.Property(e => e.SaleTimestamp)
                 .HasColumnType("datetime")
-                .HasDefaultValueSql("GETDATE()")
+                .HasDefaultValueSql("(getdate())")
                 .HasColumnName("sale_timestamp");
             entity.Property(e => e.SellerId)
                 .HasMaxLength(50)
                 .IsUnicode(false)
                 .HasColumnName("seller_id");
 
-            entity.HasOne(d => d.Bid).WithMany(p => p.Sales)
-                .HasForeignKey(d => d.BidId)
+            entity.HasOne(d => d.Bid).WithOne(p => p.Sale)
+                .HasForeignKey<Sale>(d => d.BidId)
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("FK_Sale_Bid");
 
