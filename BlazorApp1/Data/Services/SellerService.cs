@@ -35,28 +35,26 @@ public class SellerService : ISellerService
     {
         var bid = _context.Bids.Where(b => b.BidId == id).Include("BidStandNavigation").First();
         if (bid == null)
-            throw new Exception("Bid doesn't exist");
+            throw new Exception("A oferta não existe");
         if (_context.Sales.Count(s => s.BidId == id) != 0)
-            throw new Exception("Bid already accepted");
+            throw new Exception("A oferta já foi aceite");
         var piss = await _context.ProductInStands.FindAsync( bid.BidStand,bid.BidProduct);
-        if (piss == null) throw new Exception("product does not Exist u did shit in the db to get this error");
+        if (piss == null) throw new Exception("O produto não existe");
         if (bid.BidAmount > piss.Stock)
         {
             _context.Bids.Remove(bid);
             await _context.SaveChangesAsync();
             throw new Exception(
-                "The bid was invalid since there isn't enough stock to accept the bid (It was deleted)");
+                "Não existe stock suficiente para aceitar esta oferta (foi eleminada)");
         }
         Sale sale = new Sale
         {
-            Bid = bid,
+            BidId = id,
             SellerId = bid.BidStandNavigation.SellerId
         };
         piss.Stock -= bid.BidAmount;
         _context.Update(piss);
         await _context.Sales.AddAsync(sale);
-        bid.Sale = sale;
-        _context.Update(bid);
         await _context.SaveChangesAsync();
     }
 
@@ -101,12 +99,12 @@ public class SellerService : ISellerService
     {
         _context.Database.BeginTransaction();
         Market? m = await _context.Markets.FindAsync(id);
-        if (m == null) throw new Exception("The market with the given id doesn't exist");
+        if (m == null) throw new Exception("A feira não existe");
         Seller seller = await GetSeller(email);
-        if (DateTime.Now > m.StartingTime) throw new Exception("The market has already begun");
-        if (m.Stands.Count == m.TotalStands) throw new Exception("The market has reached the maximum number of stands");
+        if (DateTime.Now > m.StartingTime) throw new Exception("A feira já começou");
+        if (m.Stands.Count == m.TotalStands) throw new Exception("A feira já encheu o seu numero de bancas");
         if (_context.Stands.Count(s => s.SellerId==email && s.MarketId==id)!=0)
-            throw new Exception("The user is already participating");
+            throw new Exception("O vendedor já está inscrito");
         Stand stand = new Stand
         {
             MarketId = id, SellerId = email, StandPhotoPath = standPhoto
@@ -122,11 +120,11 @@ public class SellerService : ISellerService
             if (amount > 0)
             {
                 Product? p = await _context.Products.FindAsync(productId);
-                if (p == null) throw new Exception("No product exists with the given id");
+                if (p == null) throw new Exception("O produto não existe");
                 if (p.ProductSeller != s.SellerId)
-                    throw new Exception("The product doesn't belong to the same user as the stand");
+                    throw new Exception("O produto "+p.ProductName+" não pertence ao dono da banca");
                 if (amount > p.ProductStock)
-                    throw new Exception("There isn't enough of the product to add to the stand");
+                    throw new Exception("Não existe stock suficiente do produto "+p.ProductName);
                 p.ProductStock -= amount;
                 _context.Products.Update(p);
                 ProductInStand pis = new ProductInStand { ProductId = productId, StandId = s.StandId, Stock = amount };

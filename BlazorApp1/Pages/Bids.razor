@@ -4,17 +4,18 @@
 @using BlazorApp1.Authentication
 
 @inject ISellerService SellerService
+@inject IProductService ProductService
 @inject AuthenticationStateProvider AuthStateProvider
 
 <BackofficeLayout Logo="true" BackArrow="true" PreviousText="" PreviousUrl="/seller/main" AuthorizedRoles="Seller">
     <Content>
         <h3>Ofertas Pendentes</h3>
         <ComponentList>
-            @foreach(Bid b in PendingBids)
+            @foreach(var b in PendingBids.Select((value, i) => (value, i)))
             {
                 <ComponentListItem>
-                    <SellerBid Id="@b.BidId" Photo="/img/batata.jpg" Name="@b.BidProductNavigation.ProductName"
-                    Amount="@b.BidAmount" Price="@b.Price"/>
+                    <SellerBid Id="@b.value.BidId" Photo="@(Images[b.i])" Name="@b.value.BidProductNavigation.ProductName"
+                    Amount="@b.value.BidAmount" Price="@b.value.Price"/>
                 </ComponentListItem>
             }
         </ComponentList>
@@ -24,6 +25,7 @@
 
 @code {
     public List<Bid> PendingBids { get; set; } = new List<Bid>();
+    public List<String> Images { get; set; } = new List<string>();
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
@@ -33,7 +35,15 @@
             if (buyer == null) PendingBids = new List<Bid>();
             var bids = await SellerService.GetSellerActiveBids(buyer);
             if (bids == null) PendingBids = new List<Bid>();
-            else PendingBids = bids;
+            else
+            {
+                Images = new List<string>();
+                PendingBids = bids;
+                foreach (var bid in PendingBids)
+                {
+                    Images.Add((await ProductService.GetProduct(bid.BidProduct)).ProductPhotos.First().ProductPhotoPath);
+                }
+            }
             StateHasChanged();
         }
     }

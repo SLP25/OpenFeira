@@ -40,7 +40,6 @@
             var products = await ProductService.getProductsOfSeller(seller);
             if (products == null) Products = new List<Product>();
             else Products = products;
-            StateHasChanged();
         }
     }
     

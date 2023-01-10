@@ -94,9 +94,9 @@
                 await SellerService.RegisterSellerInMarket(Seller, MarketId, Photo, Products.Select(x => x.ProductId).ToList(), Quantities);
                 Mensagem = "Inscrito com sucesso"; //sucesium
             }
-            catch (Exception)
+            catch (Exception e)
             {
-                Mensagem = "Não o foi possivel inscrever";
+                Mensagem = e.Message;
             }
         }
         else
