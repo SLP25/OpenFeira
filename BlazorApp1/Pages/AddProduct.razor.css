@@ -14,14 +14,14 @@
 .add-failed {
     display: block;
     width: 100%;
-    color: red;
+    color: #cc0000;
     text-align: center;
     font-size: 0.9rem;
 }
-.add-sucess {
+.add-success {
     display: block;
     width: 100%;
-    color: greenyellow;
+    color: #146c43;
     text-align: center;
     font-size: 0.9rem;
 }
@@ -45,4 +45,17 @@
 .link {
     color: #0094ff;
     text-decoration: none;
+}
+
+.text-input-base {
+    padding: 5px;
+    border-width: 1px;
+    border-color: #4a4a4a;
+    background-color: white;
+    border-radius: 10px;
+    color: #4a4a4a;
+}
+
+.text-input-base:focus {
+    outline:none;
 }

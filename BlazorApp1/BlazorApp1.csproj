@@ -28,4 +28,9 @@
 	 <DotNetCliToolReference Include="Microsoft.EntityFrameworkCore.Tools" Version="2.0.3" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Pages\Buyer" />
+    <Folder Include="Pages\Seller" />
+  </ItemGroup>
+
 </Project>

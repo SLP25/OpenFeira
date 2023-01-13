@@ -3,7 +3,7 @@
         <img src="@Photo" class="image"/>
         <div class="text-wrapper">
             <p class="text"><i class="fas fa-bars"></i> @Name</p>
-            <p class="text"><i class="fas fa-clock"></i> @StartTime.ToString() - @EndTime.ToString()</p>
+            <p class="text"><i class="fas fa-clock"></i> @StartTime.ToString("dd MMM, hh:mm tt") até @EndTime.ToString("dd MMM, hh:mm tt")</p>
             @if(Online==null)
             {
                 <p class="text"><i class="fas fa-smile"></i> Online</p>

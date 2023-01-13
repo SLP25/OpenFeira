@@ -10,14 +10,17 @@
 @inject AuthenticationStateProvider AuthStateProvider
 <BackofficeLayout Logo="true" BackArrow="true" PreviousText="" PreviousUrl="/seller/main" AuthorizedRoles="Seller">
     <Content>
-        <h3>Produtos</h3>
+        <h3>Os seus produtos:</h3>
         <ComponentList>
             @if (Products!=null)
             {
-                @foreach (Product p in Products)
+                @foreach (var p in Products)
                 {
                     <ComponentListItem>
-                        <ProductComponent Stock="@p.ProductStock" Name="@p.ProductName" Price="@p.ProductBasePrice" Photo="@p.ProductPhotos.First().ProductPhotoPath" Url=@("/seller/products/{" + p.ProductId + "}")></ProductComponent>
+                        <ProductComponent Stock="@p.ProductStock" Name="@p.ProductName"
+                                          Price="@p.ProductBasePrice" Photo="@p.ProductPhotos.First().ProductPhotoPath"
+                                          Url=@("/seller/products/{" + p.ProductId + "}")>
+                        </ProductComponent>
                     </ComponentListItem>
                 }
             }
@@ -29,17 +32,18 @@
 </BackofficeLayout>
 
 @code {
+    
     public List<Product> Products { get; set; }
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         if (firstRender)
         {
-            var seller = await ((CustomAuthenticationStateProvider)AuthStateProvider).GetUsername();
+            var seller = await ((CustomAuthenticationStateProvider) AuthStateProvider).GetUsername();
             if (seller == null) Products = new List<Product>();
+            
             var products = await ProductService.getProductsOfSeller(seller);
-            if (products == null) Products = new List<Product>();
-            else Products = products;
+            if (products == null) Products = new List<Product>(); 
         }
     }
     
