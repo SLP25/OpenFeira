@@ -39,7 +39,7 @@ public class BuyerService : IBuyerService
         Stand? stand = await _context.Stands.FindAsync(standId);
         if (stand == null) throw new Exception("O stand não existe");
         _context.Add(bid);
-        if (price/amount >= p.ProductBasePrice)
+        if (price >= p.ProductBasePrice)
         {
             sale = new Sale
             {
