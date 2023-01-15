@@ -29,12 +29,6 @@
 
 @code
 {
-    protected override async Task OnInitializedAsync()
-    {
-        var user = await UserService.GetUser("seller@gmail.com");
-        Console.WriteLine(">>>>" + user.PasswordHash);
-    }
-    
     public class Model
     {
         public string Email { get; set; }
