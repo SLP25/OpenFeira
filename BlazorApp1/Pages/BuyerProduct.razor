@@ -21,6 +21,19 @@
             </div>
             <div class="col">
                 <h1 class="product-name">@Product.ProductName</h1>
+                
+                @* Se falhou ao adicionar o produto. *@
+                @if (Transaction != null && (bool)Transaction)
+                {
+                    <span class="add-success">Compra efetudada com sucesso.</span>
+                }
+    
+                @* Se adicionou o produto com sucesso. add-failed*@
+                @if (Transaction != null && ! (bool) Transaction)
+                {
+                    <span class="add-failed">Ocorreu um erro com a transação.</span> //sucesium
+                }
+                
                 <h2 class="subtitle"><span class="blue">@Product.ProductSeller</span> quer @Product.ProductBasePrice €</h2>
                 <p class="description"> @Product.ProductDescription </p>
 
@@ -70,6 +83,7 @@ else
     public bool BuyVisible { get; set; }
     public bool NotFound { get; set; } = false;
 
+    public Boolean? Transaction { get; set; } = null;
 
     public int BidAmount { get; set; }
     public decimal BidPrice { get; set; }
@@ -143,11 +157,14 @@ else
         {
             await BuyerService.MakeBid(Buyer, BidPrice, BidAmount, StandId, Product.ProductId);
             InvertBidVisible();
+            Transaction = true;
         }
         catch (Exception e)
         {
             Console.WriteLine(e);
+            Transaction = false;
         }
+        finally{ StateHasChanged(); }
     }
 
     public async void Buy()
@@ -156,10 +173,12 @@ else
         {
             await BuyerService.MakeBid(Buyer, Product.ProductBasePrice, BuyAmount, StandId, Product.ProductId);
             InvertBuyVisible();
+            Transaction = true;
         }
         catch (Exception e)
         {
             Console.WriteLine(e);
-        }
+            Transaction = false;
+        } finally{ StateHasChanged(); }
     }
 }
