@@ -145,7 +145,7 @@ else
 
     public async void Buy()
     {
-        await BuyerService.MakeBid(Buyer, Product.ProductBasePrice*BuyAmount, BuyAmount, StandId, Product.ProductId);
+        await BuyerService.MakeBid(Buyer, Product.ProductBasePrice, BuyAmount, StandId, Product.ProductId);
         InvertBuyVisible();
     }
 }
