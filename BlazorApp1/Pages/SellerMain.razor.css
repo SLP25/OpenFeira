@@ -1,0 +1,14 @@
+﻿.btn {
+    background-color: #0094FF; /* Blue background */
+    border-radius: 10px;
+    border: none; /* Remove borders */
+    color: white; /* White text */
+    padding: 12px 16px; /* Some padding */
+    font-size: 1.2rem; /* Set a font size */
+    cursor: pointer; /* Mouse pointer on hover */
+}
+
+/* Darker background on mouse-over */
+.btn:hover {
+    background-color: RoyalBlue;
+}
