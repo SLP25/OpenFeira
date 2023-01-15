@@ -139,13 +139,27 @@ else
 
     public async void Bid()
     {
-        await BuyerService.MakeBid(Buyer, BidPrice, BidAmount, StandId, Product.ProductId);
-        InvertBidVisible();
+        try
+        {
+            await BuyerService.MakeBid(Buyer, BidPrice, BidAmount, StandId, Product.ProductId);
+            InvertBidVisible();
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine(e);
+        }
     }
 
     public async void Buy()
     {
-        await BuyerService.MakeBid(Buyer, Product.ProductBasePrice, BuyAmount, StandId, Product.ProductId);
-        InvertBuyVisible();
+        try
+        {
+            await BuyerService.MakeBid(Buyer, Product.ProductBasePrice, BuyAmount, StandId, Product.ProductId);
+            InvertBuyVisible();
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine(e);
+        }
     }
 }
