@@ -2,6 +2,7 @@
 @using BlazorApp1.Data
 @using BlazorApp1.Data.Interfaces
 @using BlazorApp1.Authentication
+@using Microsoft.EntityFrameworkCore
 
 @inject ISellerService SellerService
 @inject IProductService ProductService
@@ -15,7 +16,7 @@
             {
                 <ComponentListItem>
                     <SellerBid Id="@b.value.BidId" Photo="@(Images[b.i])" Name="@b.value.BidProductNavigation.ProductName"
-                    Amount="@b.value.BidAmount" Price="@b.value.Price"/>
+                    Amount="@b.value.BidAmount" Price="@b.value.Price" Callback="@update"/>
                 </ComponentListItem>
             }
         </ComponentList>
@@ -24,15 +25,16 @@
 </BackofficeLayout>
 
 @code {
+        public String? Buyer { get; set; }
     public List<Bid> PendingBids { get; set; } = new List<Bid>();
     public List<String> Images { get; set; } = new List<string>();
 
     protected override async Task OnParametersSetAsync()
     {
         
-            var buyer = await ((CustomAuthenticationStateProvider)AuthStateProvider).GetUsername();
-            if (buyer == null) PendingBids = new List<Bid>();
-            var bids = await SellerService.GetSellerActiveBids(buyer);
+        Buyer = await ((CustomAuthenticationStateProvider)AuthStateProvider).GetUsername();
+            if (Buyer == null) PendingBids = new List<Bid>();
+            var bids = await SellerService.GetSellerActiveBids(Buyer);
             if (bids == null) PendingBids = new List<Bid>();
             else
             {
@@ -44,6 +46,23 @@
                 }
             }
             StateHasChanged();
+    }
+
+    public async Task update()
+    {
+        var bids = await SellerService.GetSellerActiveBids(Buyer);
+        if (bids == null) PendingBids = new List<Bid>();
+        else
+        {
+            Images = new List<string>();
+            PendingBids = bids;
+            foreach (var bid in PendingBids)
+            {
+                Images.Add((await ProductService.GetProduct(bid.BidProduct)).ProductPhotos.First().ProductPhotoPath);
+            }
+            StateHasChanged();
+        }
+        
     }
 
 }
