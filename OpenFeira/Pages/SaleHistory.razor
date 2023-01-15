@@ -1,0 +1,108 @@
+﻿@page "/seller/sales"
+@using OpenFeira.Authentication
+@using OpenFeira.Data
+@using OpenFeira.Data.Interfaces
+
+@inject AuthenticationStateProvider AuthStateProvider
+@inject ISellerService SellerService
+@inject NavigationManager NavManager
+
+@if (!NotFound)
+{
+    <BackofficeLayout Logo="true" BackArrow="true" PreviousText="" PreviousUrl="/seller/main" AuthorizedRoles="Seller">
+        <Content>
+            <h2>Histórico de Vendas</h2>
+            <div class="table-wrapper">
+                <Table>
+                    <TableRow EvenRow="@false">
+                        <TableCell>
+                            <div class="inline">
+                                <div class="flex">
+                                    <img class="image" src="/img/reference.png"/>
+                                    <h3 class="header">Referência</h3>
+                                </div>
+                            </div>
+                        </TableCell>
+                        <TableCell>
+                            <div class="inline">
+                                <div class="flex">
+                                    <img class="image" src="/img/market.png"/>
+                                    <h3 class="header">Feira</h3>
+                                </div>
+                            </div>
+                        </TableCell>
+                        <TableCell>
+                            <div class="inline">
+                                <div class="flex">
+                                    <img class="image" src="/img/date.png"/>
+                                    <h3 class="header">Data</h3>
+                                </div>
+                            </div>
+                        </TableCell>
+                        <TableCell>
+                            <div class="inline">
+                                <div class="flex">
+                                    <img class="image" src="/img/amount.png"/>
+                                    <h3 class="header">Quantidade</h3>
+                                </div>
+                            </div>
+                        </TableCell>
+                        <TableCell>
+                            <div class="inline">
+                                <div class="flex">
+                                    <img class="image" src="/img/price.png"/>
+                                    <h3 class="header">Preço</h3>
+                                </div>
+                            </div>
+                        </TableCell>
+                    </TableRow>
+                    @foreach (var item in Sales.Select((value, i) => (value, i)))
+                    {
+                        <TableRow EvenRow="@(item.i % 2 == 0)">
+                            <TableCell>
+                                @item.value.SaleId
+                            </TableCell>
+                            <TableCell>
+                                @item.value.Bid.BidStandNavigation.Market.MarketName
+                            </TableCell>
+                            <TableCell>
+                                @item.value.SaleTimestamp
+                            </TableCell>
+                            <TableCell>
+                                @item.value.Bid.BidAmount
+                            </TableCell>
+                            <TableCell>
+                                @item.value.Bid.Price
+                            </TableCell>
+                        </TableRow>
+                    }
+                </Table>
+            </div>
+        </Content>
+    </BackofficeLayout>
+}
+else{
+ <NotFound></NotFound>
+}
+   
+
+@code {
+    public List<Sale> Sales { get; set; } = new List<Sale>();
+    public bool NotFound { get; set; }= false;
+
+    protected override async Task OnParametersSetAsync()
+        {
+            try
+            {
+                string email = await ((CustomAuthenticationStateProvider)AuthStateProvider).GetUsername();
+                if (email == null) throw new Exception();
+                Sales = await SellerService.GetSellerSales(email);
+            }
+            catch (Exception)
+            {
+                NotFound = true;
+            }
+        StateHasChanged();
+    }
+
+}

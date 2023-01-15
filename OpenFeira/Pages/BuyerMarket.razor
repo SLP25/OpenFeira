@@ -1,0 +1,93 @@
+﻿@page "/buyer/market/{MarketIdString}"
+
+@using OpenFeira.Data
+@using OpenFeira.Data.Interfaces
+@using OpenFeira.Authentication
+
+@inject IMarketService MarketService
+@inject IStandService StandService
+@inject IProductService ProductService
+@inject NavigationManager NavManager
+
+@if (!NotFound)
+{
+    <BackofficeLayout Logo="true" BackArrow="true" PreviousText="" PreviousUrl="/buyer/main" AuthorizedRoles="Buyer">
+        <Content>
+            <h3>@MarketName</h3>
+            <ComponentList>
+                @foreach (Stand s in Stands)
+                {
+                    <ComponentListItem>
+                        <StandComponent Url="@string.Format("/buyer/stand/{0}", s.StandId)" Name="@s.Seller.CompanyName" Photo="@s.StandPhotoPath" PriceMin="@GetMinPrice(s)" PriceMax="@GetMaxPrice(s)" SellerName="@s.Seller.Name"></StandComponent>
+                    </ComponentListItem>
+                }
+            </ComponentList>
+
+        </Content>
+    </BackofficeLayout>
+}
+else
+{
+    <NotFound></NotFound>
+}
+
+@code {
+
+    [Parameter]
+    public string MarketIdString { get; set; }
+
+    public string MarketName { get; set; }
+    public List<Stand> Stands { get; set; }
+    public bool NotFound { get; set; } = false;
+
+    private decimal GetMinPrice(Stand s)
+    {
+        decimal res = decimal.MaxValue;
+        foreach (ProductInStand ps in s.ProductInStands)
+        {
+            Task<Product> p = ProductService.GetProduct(ps.ProductId);
+            p.Wait();
+            res = Math.Min(res, p.Result.ProductBasePrice);
+        }
+        return res;
+    }
+
+    private decimal GetMaxPrice(Stand s)
+    {
+        decimal res = decimal.MinValue;
+        foreach (ProductInStand ps in s.ProductInStands)
+        {
+            Task<Product> p = ProductService.GetProduct(ps.ProductId);
+            p.Wait();
+            res = Math.Max(res, p.Result.ProductBasePrice);
+        }
+        return res;
+    }
+
+    protected async override void OnInitialized()
+    {
+        base.OnInitialized();
+        if (!int.TryParse(MarketIdString, out int n))
+        {
+            NotFound = true;
+            return;
+        }
+        int marketId = int.Parse(MarketIdString);
+        Market m = await MarketService.GetMarket(marketId);
+        if (m.StartingTime > DateTime.Now || DateTime.Now > m.EndingTime)
+        {
+            NotFound = true;
+            return;
+        }
+
+        List<Stand> temp = await MarketService.GetStandsInMarket(marketId);
+        Stands = new List<Stand>();
+        foreach (Stand s in temp)
+        {
+            Stand s1 = await StandService.GetStand(s.StandId);
+            Stands.Add(s1);
+        }
+        MarketName = m.MarketName;
+    }
+
+}

@@ -1,0 +1,22 @@
+﻿@page "/seller/main"
+
+@using OpenFeira.Data
+@using OpenFeira.Data.Interfaces
+@using OpenFeira.Authentication
+
+
+@inject NavigationManager NavManager
+
+<BackofficeLayout Logo="true" BackArrow="true" PreviousText="" PreviousUrl="/" AuthorizedRoles="Seller">
+    <Content>
+        <h3>Menu Principal</h3>
+        <p></p>
+        <div>
+            <button class="btn" onClick="window.location.href='/seller/markets';"><i class="fa fa-shopping-cart"></i> Feiras</button>
+            <button class="btn" onClick="window.location.href='/seller/products';"><i class="fa fa-shopping-bag"></i> Produtos</button>
+            <button class="btn" onClick="window.location.href='/seller/sales';"><i class="fa fa-credit-card-alt"></i> Vendas</button>
+            <button class="btn" onClick="window.location.href='/seller/bids';"><i class="fa fa-usd"></i> Ofertas</button>
+        </div>
+    </Content>
+</BackofficeLayout>
+

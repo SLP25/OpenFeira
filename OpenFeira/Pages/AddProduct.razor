@@ -1,0 +1,188 @@
+﻿@page "/seller/addProduct"
+
+@using OpenFeira.Data
+@using OpenFeira.Data.Interfaces
+@using OpenFeira.Authentication
+@using Microsoft.AspNetCore.Components.Forms
+@using System.ComponentModel.DataAnnotations
+
+@inject IMarketService MarketService
+@inject ISellerService SellerService
+@inject IProductService ProductService
+@inject NavigationManager NavManager
+@inject AuthenticationStateProvider AuthStateProvider
+
+<style>
+    
+    .text-input-base {
+        padding: 5px;
+        border-width: 1px;
+        border-color: #4a4a4a;
+        background-color: white;
+        border-radius: 10px;
+        color: #4a4a4a;
+        text-align: left;
+    }
+    
+    .large-input {
+    
+        height: 100px;
+    
+    }
+    
+    .text-input-base:focus {
+        outline:none;
+    }
+    
+</style>
+
+<BackofficeLayout Logo="true" BackArrow="true" PreviousText="Voltar aos Produtos" PreviousUrl="/seller/products" AuthorizedRoles="Seller">
+    <Content>
+
+        <Grid>
+
+        </Grid>
+
+        <h2>Adicionar novo produto:</h2>
+        <EditForm Model="@model" OnValidSubmit="@CreateProduct">
+
+            @* Se falhou ao adicionar o produto. *@
+            @if (model.FailedTOAdd)
+            {
+                <span class="add-failed">Alguma das propriedades do produto é inválida.</span>
+            }
+
+            @* Se adicionou o produto com sucesso. *@
+            @if (model.AddedWithSuccess)
+            {
+                <span class="add-success">Produto adicionado com successo.</span> //sucesium
+            }
+
+            <h3>Nome:</h3>
+            <InputText class="text-input-base" @bind-Value="@model.Name" placeholder="Nome do Produto"/>
+
+            <h3>Descrição:</h3>
+            <InputText class="text-input-base large-input" @bind-Value="@model.Description" placeholder="Descrição do Produto"/>
+
+            <h3>Preço sugerido:</h3>
+            <InputNumber class="text-input-base" @bind-Value="@model.BasePrice" Min="0" Max="99999999" placeholder="Preço Sugerido aos Clientes"/>
+
+            <h3>Stock:</h3>
+            <InputNumber class="text-input-base" @bind-Value="@model.Stock" Min="0" Max="99999" placeholder="Quantidade Disponivel do Produto"/>
+
+            <h3>Imagens:</h3>
+            <ComponentList>
+                @foreach (var item in @model.Images)
+                {
+                    <ComponentListItem>
+                        <ListOfImagesComponent Photo=@item></ListOfImagesComponent>
+                    </ComponentListItem>
+                }
+            </ComponentList>
+
+            <InputText class="text-input-base" @bind-Value="@model.CurrImage" placeholder="Nova imagem"/>
+            <button @onclick="@AddImage" @onclick:preventDefault>+</button>
+
+            <div class="button-wrapper">
+                <button class="addProduct">Adicionar</button>
+            </div>
+
+        </EditForm>
+    </Content>
+</BackofficeLayout>
+
+@code
+{
+    public class Model
+    {
+        public string? Seller { get; set; }
+
+        [Required]
+        [StringLength(50, ErrorMessage = "The name should be between 1 and 50 characters.")]
+        public string Name { get; set; }
+
+        [Required]
+        [StringLength(1000, ErrorMessage = "The description should be between 1 and 1000 characters.")]
+        public string Description { get; set; }
+
+        [Required]
+        public decimal BasePrice { get; set; }
+
+        [Required]
+        public int Stock { get; set; }
+
+        public bool FailedTOAdd { get; set; }
+        public bool AddedWithSuccess { get; set; }
+        public List<String> Images { get; set; }
+
+        public string CurrImage { get; set; }
+
+        public Model()
+        {
+            CurrImage = "";
+            Seller = "";
+            Name = "";
+            Description = "";
+            BasePrice = (decimal)00.00;
+            Stock = 0;
+            Images = new List<string>();
+            FailedTOAdd = false;
+            AddedWithSuccess = false;
+        }
+    }
+
+    private Model model = new Model();
+
+    protected override async Task OnParametersSetAsync()
+    {
+        model.Seller = await ((CustomAuthenticationStateProvider)AuthStateProvider).GetUsername();
+        StateHasChanged();
+    }
+
+
+    private async Task CreateProduct()
+    {
+        model.FailedTOAdd = false;
+        model.AddedWithSuccess = false;
+
+        if (model.Seller == null || model.Images.Count == 0)
+        {
+            model.FailedTOAdd = true;
+            return;
+        }
+        if (Decimal.Round(model.BasePrice, 2) == model.BasePrice)
+        {
+            try
+            {
+                await ProductService.CreateProduct(
+                    model.Seller,
+                    model.Description,
+                    model.BasePrice,
+                    model.Name,
+                    model.Stock,
+                    model.Images
+                    );
+                model.AddedWithSuccess = true;
+            }
+            catch (InvalidCastException e)
+            {
+                model.FailedTOAdd = true;
+            }
+        }
+        else
+        {
+            model.FailedTOAdd = true;
+        }
+    }
+
+    private void AddImage()
+    {
+    // Do not add any image if the string for the image is empty.
+        if (model.CurrImage == String.Empty) return;
+
+    // Adding image and emptying the form.
+        model.Images.Add(model.CurrImage);
+        model.CurrImage = string.Empty;
+    }
+
+}

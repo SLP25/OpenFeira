@@ -1,0 +1,184 @@
+﻿@page "/buyer/product/{StandIdString}/{ProductIdString}"
+
+@using OpenFeira.Data.Interfaces
+@using OpenFeira.Data
+@using OpenFeira.Authentication
+
+@inject AuthenticationStateProvider AuthStateProvider
+@inject IBuyerService BuyerService
+@inject IStandService StandService
+@inject IProductService ProductService
+@inject NavigationManager NavManager
+
+@if (!NotFound)
+    {
+<BackofficeLayout Logo="true" BackArrow="true" PreviousText="" PreviousUrl=@("/buyer/stand/" + StandIdString) AuthorizedRoles="Buyer">
+    
+    <Content>
+        <div class="wrapper">
+            <div class="col">
+                <img class="image" src="@Product.ProductPhotos.First().ProductPhotoPath"/>
+            </div>
+            <div class="col">
+                <h1 class="product-name">@Product.ProductName</h1>
+                
+                @* Se falhou ao adicionar o produto. *@
+                @if (Transaction != null && (bool)Transaction)
+                {
+                    <span class="add-success">Compra efetudada com sucesso.</span>
+                }
+    
+                @* Se adicionou o produto com sucesso. add-failed*@
+                @if (Transaction != null && ! (bool) Transaction)
+                {
+                    <span class="add-failed">Ocorreu um erro com a transação.</span> //sucesium
+                }
+                
+                <h2 class="subtitle"><span class="blue">@Product.ProductSeller</span> quer @Product.ProductBasePrice €</h2>
+                <p class="description"> @Product.ProductDescription </p>
+
+
+                <div class="flex col button-wrapper">
+                    <div class="dropdown">
+                        <button class="button" @onclick="InvertBidVisible">&#x1F44B; Fazer proposta</button>
+                        <div class="form-wrapper" style="@(BidVisible ? "" : "opacity: 0")">
+                            <div class="child">
+                                <input @bind="BidAmount" class="input-field" type="number" step="1" placeholder="Qt."/>
+                                <input @bind="BidPrice" class="input-field" type="number" placeholder="Valor Unitário"/>
+                                <button class="input-field submit" @onclick="Bid">Confirmar</button>
+                            </div>
+
+                        </div>
+                    </div>
+                    <div class="dropdown">
+                        <button class="button" @onclick="InvertBuyVisible">&#x1F6D2; Comprar</button>
+                        <div class="form-wrapper" style="@(BuyVisible ? "" : "opacity: 0")">
+                            <div class="child">
+                                <input @bind="BuyAmount" class="input-field" type="number" step="1" placeholder="Qt."/>
+                                <button class="input-field submit" @onclick="Buy">Confirmar</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </Content>
+</BackofficeLayout>
+    }
+else
+{
+<NotFound></NotFound>
+}
+@code {
+
+    [Parameter]
+    public string ProductIdString { get; set; }
+    [Parameter]
+    public string StandIdString { get; set; }
+    
+    public string? Buyer { get; set; }
+    public Product Product { get; set; }
+    public int StandId { get; set; }
+    public bool BidVisible { get; set; }
+    public bool BuyVisible { get; set; }
+    public bool NotFound { get; set; } = false;
+
+    public Boolean? Transaction { get; set; } = null;
+
+    public int BidAmount { get; set; }
+    public decimal BidPrice { get; set; }
+    public int BuyAmount { get; set; }
+    
+    protected override async Task OnParametersSetAsync()
+    {
+            Buyer = await ((CustomAuthenticationStateProvider)AuthStateProvider).GetUsername();
+        if (Buyer == null) NotFound = true;
+            StateHasChanged();
+        }
+
+
+    protected async override void OnInitialized()
+    {
+        base.OnInitialized();
+        BidVisible = false;
+        BuyVisible = false;
+
+        try
+        {
+            StandId = int.Parse(StandIdString);
+            var s = await StandService.GetStand(StandId);
+            var m = s.Market;
+            if (m.StartingTime > DateTime.Now || DateTime.Now > m.EndingTime)
+            {
+                NotFound = true;
+                return;
+            }
+            int productId = int.Parse(ProductIdString);
+            List<ProductInStand> products = await StandService.GetProductsInStand(StandId);
+
+            bool found = false;
+            foreach(ProductInStand ps in products)
+            {
+                if(ps.ProductId == productId)
+                {
+                    Product = await ProductService.GetProduct(ps.ProductId);
+                    found = true;
+                    break;
+                }
+            }
+
+            if(!found)
+            {
+                throw new Exception();
+            }
+        }
+        catch(Exception)
+        {
+            NotFound = true;
+        }
+
+    }
+
+    public void InvertBidVisible()
+    {
+        BidVisible = !BidVisible;
+        StateHasChanged();
+    }
+
+    public void InvertBuyVisible()
+    {
+        BuyVisible = !BuyVisible;
+        StateHasChanged();
+    }
+
+    public async void Bid()
+    {
+        try
+        {
+            await BuyerService.MakeBid(Buyer, BidPrice, BidAmount, StandId, Product.ProductId);
+            InvertBidVisible();
+            Transaction = true;
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine(e);
+            Transaction = false;
+        }
+        finally{ StateHasChanged(); }
+    }
+
+    public async void Buy()
+    {
+        try
+        {
+            await BuyerService.MakeBid(Buyer, Product.ProductBasePrice, BuyAmount, StandId, Product.ProductId);
+            InvertBuyVisible();
+            Transaction = true;
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine(e);
+            Transaction = false;
+        } finally{ StateHasChanged(); }
+    }
+}

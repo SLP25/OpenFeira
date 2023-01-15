@@ -1,0 +1,34 @@
+﻿@page "/buyer/main"
+
+@using OpenFeira.Data
+@using OpenFeira.Data.Interfaces
+@using OpenFeira.Authentication
+
+@inject IMarketService MarketService
+@inject NavigationManager NavManager
+
+<BackofficeLayout Logo="true" BackArrow="true" PreviousText="" PreviousUrl="/" AuthorizedRoles="Buyer">
+    <Content>
+        <h3>Feiras Disponíveis</h3>
+        <ComponentList>
+            @foreach(Market m in Markets)
+            {
+                <ComponentListItem>
+                   <MarketComponent Url="@string.Format("/buyer/market/{0}", m.MarketId)" Name="@m.MarketName" Photo="@m.MarketPhotoPath" StartTime="@m.StartingTime" EndTime="@m.EndingTime" Online="@m.MarketLocation" disabled="@(m.StartingTime>=DateTime.Now || DateTime.Now>=m.EndingTime)"></MarketComponent>
+                </ComponentListItem>
+            }
+        </ComponentList>
+
+    </Content>
+</BackofficeLayout>
+
+@code {
+    public List<Market> Markets { get; set; }
+
+    protected override void OnInitialized()
+    {
+        base.OnInitialized();
+
+        Markets = MarketService.GetMarkets();
+    }
+}

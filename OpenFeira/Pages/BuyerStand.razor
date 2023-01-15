@@ -1,0 +1,70 @@
+﻿@page "/buyer/stand/{StandIdString}"
+@using OpenFeira.Data
+@using OpenFeira.Data.Interfaces
+@using OpenFeira.Authentication
+
+@inject IStandService StandService
+@inject IProductService ProductService
+@inject NavigationManager NavManager
+@inject AuthenticationStateProvider AuthStateProvider
+
+@if (!NotFound)
+{
+    <BackofficeLayout Logo="true" BackArrow="true" PreviousText="" PreviousUrl=@("/buyer/market/" + marketId) AuthorizedRoles="Buyer">
+        <Content>
+            <h3>@StandName</h3>
+            <ComponentList>
+                @foreach (var p in Products.Select((value, i) => (value, i)))
+                {
+                    <ComponentListItem>
+                        <ProductComponent Stock="@Stocks[p.i]" Name="@p.value.ProductName" Photo="@p.value.ProductPhotos.First().ProductPhotoPath" Url="@(string.Format("/buyer/product/{0}/{1}", StandIdString, p.value.ProductId))" Price="@p.value.ProductBasePrice"></ProductComponent>
+                    </ComponentListItem>
+                }
+            </ComponentList>
+
+        </Content>
+    </BackofficeLayout>
+}
+else{
+<NotFound></NotFound>
+}
+@code  {
+    
+    public Stand Stand { get; set; }
+    public List<Product> Products { get; set; }
+    public List<int> Stocks { get; set; }
+    public string StandName { get; set; }
+    public string StandId { get; set; }
+    public string marketId { get; set; } = "";
+    public bool NotFound { get; set; } = false;
+    [Parameter]
+    public string StandIdString {get;set; }
+
+    protected async override void OnInitialized()
+    {
+        base.OnInitialized();
+        if(!int.TryParse(StandIdString, out int n)) {
+            NotFound = true;
+            return;
+        }
+        int standId = int.Parse(StandIdString);
+        Stand s = await StandService.GetStand(standId);
+        marketId = s.MarketId.ToString();
+        Market m = s.Market;
+        if (m.StartingTime > DateTime.Now ||  DateTime.Now > m.EndingTime)
+        {
+            NotFound = true;
+            return;
+        }
+
+        Products = new List<Product>();
+        Stocks = new List<int>();
+        foreach(var ps in s.ProductInStands) {
+            Product p = await ProductService.GetProduct(ps.ProductId);
+            Products.Add(p);
+            Stocks.Add(ps.Stock);
+        }
+
+        StandName = string.Format("{0}: {1}", s.Market.MarketName, s.Seller.CompanyName);
+    }
+}
