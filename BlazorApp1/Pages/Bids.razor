@@ -12,11 +12,11 @@
     <Content>
         <h3>Ofertas Pendentes</h3>
         <ComponentList>
-            @foreach(var b in PendingBids.Select((value, i) => (value, i)))
+            @foreach (var b in PendingBids.Select((value, i) => (value, i)))
             {
                 <ComponentListItem>
                     <SellerBid Id="@b.value.BidId" Photo="@(Images[b.i])" Name="@b.value.BidProductNavigation.ProductName"
-                    Amount="@b.value.BidAmount" Price="@b.value.Price" Callback="@update"/>
+                               Amount="@b.value.BidAmount" Price="@b.value.Price" Callback="@update"/>
                 </ComponentListItem>
             }
         </ComponentList>
@@ -25,27 +25,26 @@
 </BackofficeLayout>
 
 @code {
-        public String? Buyer { get; set; }
+    public String? Buyer { get; set; }
     public List<Bid> PendingBids { get; set; } = new List<Bid>();
     public List<String> Images { get; set; } = new List<string>();
 
     protected override async Task OnParametersSetAsync()
     {
-        
         Buyer = await ((CustomAuthenticationStateProvider)AuthStateProvider).GetUsername();
-            if (Buyer == null) PendingBids = new List<Bid>();
-            var bids = await SellerService.GetSellerActiveBids(Buyer);
-            if (bids == null) PendingBids = new List<Bid>();
-            else
+        if (Buyer == null) PendingBids = new List<Bid>();
+        var bids = await SellerService.GetSellerActiveBids(Buyer);
+        if (bids == null) PendingBids = new List<Bid>();
+        else
+        {
+            Images = new List<string>();
+            PendingBids = bids;
+            foreach (var bid in PendingBids)
             {
-                Images = new List<string>();
-                PendingBids = bids;
-                foreach (var bid in PendingBids)
-                {
-                    Images.Add((await ProductService.GetProduct(bid.BidProduct)).ProductPhotos.First().ProductPhotoPath);
-                }
+                Images.Add((await ProductService.GetProduct(bid.BidProduct)).ProductPhotos.First().ProductPhotoPath);
             }
-            StateHasChanged();
+        }
+        StateHasChanged();
     }
 
     public async Task update()
@@ -62,7 +61,6 @@
             }
             StateHasChanged();
         }
-        
     }
 
 }

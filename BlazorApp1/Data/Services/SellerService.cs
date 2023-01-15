@@ -38,6 +38,13 @@ public class SellerService : ISellerService
             throw new Exception("A oferta não existe");
         if (_context.Sales.Count(s => s.BidId == id) != 0)
             throw new Exception("A oferta já foi aceite");
+        if (_context.Markets.Count(m => m.MarketId == bid.BidStandNavigation.MarketId && m.EndingTime < DateTime.Now) !=
+            0)
+        {
+            _context.Bids.Remove(bid);
+            await _context.SaveChangesAsync();
+            throw new Exception("A feira já fechou");
+        }
         var piss = await _context.ProductInStands.FindAsync( bid.BidStand,bid.BidProduct);
         if (piss == null) throw new Exception("O produto não existe");
         if (bid.BidAmount > piss.Stock)
