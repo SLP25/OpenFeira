@@ -30,18 +30,21 @@ else
 {
     <NotFound></NotFound>
 }
+
 @code {
+
     [Parameter]
     public string MarketIdString { get; set; }
 
     public string MarketName { get; set; }
     public List<Stand> Stands { get; set; }
-    public bool  NotFound { get; set; } = false;
+    public bool NotFound { get; set; } = false;
 
     private decimal GetMinPrice(Stand s)
     {
         decimal res = decimal.MaxValue;
-        foreach(ProductInStand ps in s.ProductInStands) {
+        foreach (ProductInStand ps in s.ProductInStands)
+        {
             Task<Product> p = ProductService.GetProduct(ps.ProductId);
             p.Wait();
             res = Math.Min(res, p.Result.ProductBasePrice);
@@ -52,7 +55,8 @@ else
     private decimal GetMaxPrice(Stand s)
     {
         decimal res = decimal.MinValue;
-        foreach(ProductInStand ps in s.ProductInStands) {
+        foreach (ProductInStand ps in s.ProductInStands)
+        {
             Task<Product> p = ProductService.GetProduct(ps.ProductId);
             p.Wait();
             res = Math.Max(res, p.Result.ProductBasePrice);
@@ -63,13 +67,14 @@ else
     protected async override void OnInitialized()
     {
         base.OnInitialized();
-        if(!int.TryParse(MarketIdString, out int n)) {
+        if (!int.TryParse(MarketIdString, out int n))
+        {
             NotFound = true;
             return;
         }
         int marketId = int.Parse(MarketIdString);
         Market m = await MarketService.GetMarket(marketId);
-        if (m.StartingTime > DateTime.Now || m.EndingTime > DateTime.Now)
+        if (m.StartingTime > DateTime.Now || DateTime.Now > m.EndingTime)
         {
             NotFound = true;
             return;
@@ -77,11 +82,12 @@ else
 
         List<Stand> temp = await MarketService.GetStandsInMarket(marketId);
         Stands = new List<Stand>();
-        foreach(Stand s in temp)
+        foreach (Stand s in temp)
         {
             Stand s1 = await StandService.GetStand(s.StandId);
             Stands.Add(s1);
-        } 
+        }
         MarketName = m.MarketName;
     }
+
 }

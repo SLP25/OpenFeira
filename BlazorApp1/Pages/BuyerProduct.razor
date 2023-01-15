@@ -92,6 +92,13 @@ else
         try
         {
             StandId = int.Parse(StandIdString);
+            var s = await StandService.GetStand(StandId);
+            var m = s.Market;
+            if (m.StartingTime > DateTime.Now || DateTime.Now > m.EndingTime)
+            {
+                NotFound = true;
+                return;
+            }
             int productId = int.Parse(ProductIdString);
             List<ProductInStand> products = await StandService.GetProductsInStand(StandId);
 

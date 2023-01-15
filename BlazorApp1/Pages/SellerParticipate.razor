@@ -12,6 +12,7 @@
 @inject AuthenticationStateProvider AuthStateProvider
 @inject NavigationManager NavManager
 
+@if(!NotFound){
 <BackofficeLayout Logo="true" BackArrow="true" PreviousText="" PreviousUrl="/seller/main" AuthorizedRoles="Seller">
     <Content>
         @if (Mensagem != null)
@@ -33,7 +34,9 @@
         <button class="participate" @onclick="@ParticipateInMarket"><i class="fas fa-share-square"></i> Participar em @MarketName</button>
     </Content>
 </BackofficeLayout>
-
+}else{
+<NotFound></NotFound>
+}
 @code {
     public List<int> Quantities { get; set; } = new List<int>();
     public List<Product> Products { get; set; } = new List<Product>();
@@ -49,32 +52,33 @@
 
     protected override async Task OnParametersSetAsync()
         {
+            Seller = await ((CustomAuthenticationStateProvider)AuthStateProvider).GetUsername();
+        if (Seller != null)
+        {
             try
             {
                 MarketId = int.Parse(MarketIdString);
                 Market m = await MarketService.GetMarket(MarketId);
                 MarketName = m.MarketName;
-                if (m.StartingTime <= DateTime.Now)
+                if (m.StartingTime <= DateTime.Now || m.Stands.Where(s=>s.SellerId==Seller).Count()!=0)
                     throw new Exception();
             }
             catch (Exception)
             {
                 NotFound = true;
             }
-            Seller = await ((CustomAuthenticationStateProvider)AuthStateProvider).GetUsername();
+
             Products = new List<Product>();
             Quantities = new List<int>();
-            if (Seller != null)
+            Seller s = await SellerService.GetSeller(Seller);
+            foreach (Product p in (List<Product>)s.Products)
             {
-                Seller s = await SellerService.GetSeller(Seller);
-                foreach (Product p in (List<Product>)s.Products)
-                {
-                    Product p1 = await ProductService.GetProduct(p.ProductId);
-                    Products.Add(p1);
-                    Quantities.Add(0);
-                }
+                Product p1 = await ProductService.GetProduct(p.ProductId);
+                Products.Add(p1);
+                Quantities.Add(0);
             }
-            else
+        }
+        else
             {
                 Mensagem = "O utilizador não existe";
             }

@@ -50,6 +50,12 @@ else{
         int standId = int.Parse(StandIdString);
         Stand s = await StandService.GetStand(standId);
         marketId = s.MarketId.ToString();
+        Market m = s.Market;
+        if (m.StartingTime > DateTime.Now ||  DateTime.Now > m.EndingTime)
+        {
+            NotFound = true;
+            return;
+        }
 
         Products = new List<Product>();
         Stocks = new List<int>();
