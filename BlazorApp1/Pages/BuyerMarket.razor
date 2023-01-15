@@ -69,6 +69,11 @@ else
         }
         int marketId = int.Parse(MarketIdString);
         Market m = await MarketService.GetMarket(marketId);
+        if (m.StartingTime > DateTime.Now || m.EndingTime > DateTime.Now)
+        {
+            NotFound = true;
+            return;
+        }
 
         List<Stand> temp = await MarketService.GetStandsInMarket(marketId);
         Stands = new List<Stand>();
