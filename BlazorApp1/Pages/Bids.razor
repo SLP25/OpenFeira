@@ -27,10 +27,9 @@
     public List<Bid> PendingBids { get; set; } = new List<Bid>();
     public List<String> Images { get; set; } = new List<string>();
 
-    protected override async Task OnAfterRenderAsync(bool firstRender)
+    protected override async Task OnParametersSetAsync()
     {
-        if (firstRender)
-        {
+        
             var buyer = await ((CustomAuthenticationStateProvider)AuthStateProvider).GetUsername();
             if (buyer == null) PendingBids = new List<Bid>();
             var bids = await SellerService.GetSellerActiveBids(buyer);
@@ -45,7 +44,6 @@
                 }
             }
             StateHasChanged();
-        }
     }
 
 }

@@ -9,27 +9,34 @@
 @inject IProductService ProductService
 @inject NavigationManager NavManager
 
-<BackofficeLayout Logo="true" BackArrow="true" PreviousText="" PreviousUrl="/buyer/main" AuthorizedRoles="Buyer">
-    <Content>
-        <h3>@MarketName</h3>
-        <ComponentList>
-            @foreach(Stand s in Stands)
-            {
-                <ComponentListItem>
-                   <StandComponent Url="@string.Format("/buyer/stand/{0}", s.StandId)" Name="@s.Seller.CompanyName" Photo="@s.StandPhotoPath" PriceMin="@GetMinPrice(s)" PriceMax="@GetMaxPrice(s)" SellerName="@s.Seller.Name"></StandComponent>
-                </ComponentListItem>
-            }
-        </ComponentList>
+@if (!NotFound)
+{
+    <BackofficeLayout Logo="true" BackArrow="true" PreviousText="" PreviousUrl="/buyer/main" AuthorizedRoles="Buyer">
+        <Content>
+            <h3>@MarketName</h3>
+            <ComponentList>
+                @foreach (Stand s in Stands)
+                {
+                    <ComponentListItem>
+                        <StandComponent Url="@string.Format("/buyer/stand/{0}", s.StandId)" Name="@s.Seller.CompanyName" Photo="@s.StandPhotoPath" PriceMin="@GetMinPrice(s)" PriceMax="@GetMaxPrice(s)" SellerName="@s.Seller.Name"></StandComponent>
+                    </ComponentListItem>
+                }
+            </ComponentList>
 
-    </Content>
-</BackofficeLayout>
-
+        </Content>
+    </BackofficeLayout>
+}
+else
+{
+    <NotFound></NotFound>
+}
 @code {
     [Parameter]
     public string MarketIdString { get; set; }
 
     public string MarketName { get; set; }
     public List<Stand> Stands { get; set; }
+    public bool  NotFound { get; set; } = false;
 
     private decimal GetMinPrice(Stand s)
     {
@@ -57,7 +64,7 @@
     {
         base.OnInitialized();
         if(!int.TryParse(MarketIdString, out int n)) {
-            NavManager.NavigateTo("/404");
+            NotFound = true;
             return;
         }
         int marketId = int.Parse(MarketIdString);

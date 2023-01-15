@@ -42,13 +42,12 @@
     public string? Seller { get; set; } = null;
     public string Photo { get; set; } = "";
     public string? Mensagem { get; set; } = null;
+    public bool NotFound { get; set; } = false;
 
     [Parameter]
     public string MarketIdString { get; set; }
 
-    protected override async Task OnAfterRenderAsync(bool firstRender)
-    {
-        if (firstRender)
+    protected override async Task OnParametersSetAsync()
         {
             try
             {
@@ -60,7 +59,7 @@
             }
             catch (Exception)
             {
-                NavManager.NavigateTo("/404");
+                NotFound = true;
             }
             Seller = await ((CustomAuthenticationStateProvider)AuthStateProvider).GetUsername();
             Products = new List<Product>();
@@ -81,7 +80,6 @@
             }
             StateHasChanged();
         }
-    }
 
 
     public async Task ParticipateInMarket()

@@ -10,11 +10,14 @@
 @inject IProductService ProductService
 @inject NavigationManager NavManager
 
-<BackofficeLayout Logo="true" BackArrow="true" PreviousText="" PreviousUrl=@("/buyer/stand/"+StandIdString) AuthorizedRoles="Buyer">
+@if (!NotFound)
+    {
+<BackofficeLayout Logo="true" BackArrow="true" PreviousText="" PreviousUrl=@("/buyer/stand/" + StandIdString) AuthorizedRoles="Buyer">
+    
     <Content>
         <div class="wrapper">
             <div class="col">
-                <img class="image" src="@Product.ProductPhotos.First().ProductPhotoPath" />
+                <img class="image" src="@Product.ProductPhotos.First().ProductPhotoPath"/>
             </div>
             <div class="col">
                 <h1 class="product-name">@Product.ProductName</h1>
@@ -31,7 +34,7 @@
                                 <input @bind="BidPrice" class="input-field" type="number" placeholder="Valor Unitário"/>
                                 <button class="input-field submit" @onclick="Bid">Confirmar</button>
                             </div>
-                            
+
                         </div>
                     </div>
                     <div class="dropdown">
@@ -42,13 +45,17 @@
                                 <button class="input-field submit" @onclick="Buy">Confirmar</button>
                             </div>
                         </div>
-                    </div> 
+                    </div>
                 </div>
             </div>
         </div>
     </Content>
 </BackofficeLayout>
-
+    }
+else
+{
+<NotFound></NotFound>
+}
 @code {
 
     [Parameter]
@@ -61,21 +68,19 @@
     public int StandId { get; set; }
     public bool BidVisible { get; set; }
     public bool BuyVisible { get; set; }
+    public bool NotFound { get; set; } = false;
 
 
     public int BidAmount { get; set; }
     public decimal BidPrice { get; set; }
     public int BuyAmount { get; set; }
     
-    protected override async Task OnAfterRenderAsync(bool firstRender)
+    protected override async Task OnParametersSetAsync()
     {
-        if (firstRender)
-        {
             Buyer = await ((CustomAuthenticationStateProvider)AuthStateProvider).GetUsername();
-            if (Buyer == null) NavManager.NavigateTo("/404");
+        if (Buyer == null) NotFound = true;
             StateHasChanged();
         }
-    }
 
 
     protected async override void OnInitialized()
@@ -108,7 +113,7 @@
         }
         catch(Exception)
         {
-            NavManager.NavigateTo("/404");
+            NotFound = true;
         }
 
     }
